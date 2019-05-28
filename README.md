@@ -11,13 +11,19 @@ Subject given by: [Juan Francisco Cardona McCormick](https://www.linkedin.com/in
 To run this project follow these steps.
 
 1. Build the binaries
-> make
+```bash
+make
+```
 
 2. Launch the main Executable to see the usage menu
-> bin/evaluador
+```bash
+bin/evaluador
+```
 
 3. Remove binaries
-> make clean
+```bash
+make clean
+```
 
 # Members
 * Jhonatan Quiñonez Avila - 201510110010
