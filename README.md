@@ -8,15 +8,15 @@ Subject given by: [Juan Francisco Cardona McCormick](https://www.linkedin.com/in
 
 # How to run
 
-To run this project follow this steps
+To run this project follow these steps.
 
-* Build the binaries
+1. Build the binaries
 > make
 
-* Launch the main Executable to see the usage menu
+2. Launch the main Executable to see the usage menu
 > bin/evaluador
 
-* Remove binaries
+3. Remove binaries
 > make clean
 
 # Members
