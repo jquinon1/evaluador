@@ -2,6 +2,10 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <string.h>
+#include "initializer.h"
+#include "registry.h"
+#include "reporter.h"
+#include "controller.h"
 
 using namespace std;
 
@@ -12,15 +16,25 @@ int main(int argc, char* argv[]){
   char *command = argv[1];
   if (strcmp(command,"init") == 0) {
     cout << "Initializing" << endl;
+    // call command method initialize(*argv)
+    initializer(*argv);
   } else if (strcmp(command,"reg") == 0) {
-    cout << "Registering" << endl;
+    cout << "registrying" << endl;
+    // call command method registry(*argv)
+    registry(*argv);
   } else if (strcmp(command,"ctrl") == 0) {
     cout << "Controlling" << endl;
+    // call command method controller(*argv)
+    controller(*argv);
   } else if (strcmp(command,"rep") == 0) {
     cout << "Reporting" << endl;
+    // call command method reporter(*argv)
+    reporter(*argv);
   } else {
     usage(argv[0]);
   }
+
+  return EXIT_SUCCESS;
 }
 
 static void usage(const char* progname) {

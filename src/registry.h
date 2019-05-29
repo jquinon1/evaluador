@@ -1,0 +1,1 @@
+void registry(char* params);
