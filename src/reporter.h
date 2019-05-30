@@ -1,1 +1,2 @@
-void reporter(char* params);
+#pragma once
+void reporter(int params_lenght,char* params[]);

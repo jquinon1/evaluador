@@ -1,1 +1,2 @@
-void controller(char *params);
+#pragma once
+void controller(int params_lenght,char *params[]);

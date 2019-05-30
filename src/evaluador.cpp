@@ -6,10 +6,9 @@
 #include "registry.h"
 #include "reporter.h"
 #include "controller.h"
+#include "helper.h"
 
 using namespace std;
-
-static void usage(const char*);
 
 int main(int argc, char* argv[]){
   if (argc <= 1) usage(argv[0]);
@@ -17,38 +16,22 @@ int main(int argc, char* argv[]){
   if (strcmp(command,"init") == 0) {
     cout << "Initializing" << endl;
     // call command method initialize(*argv)
-    initializer(*argv);
+    initializer(argc,argv);
   } else if (strcmp(command,"reg") == 0) {
     cout << "registrying" << endl;
     // call command method registry(*argv)
-    registry(*argv);
+    registry(argc,argv);
   } else if (strcmp(command,"ctrl") == 0) {
     cout << "Controlling" << endl;
     // call command method controller(*argv)
-    controller(*argv);
+    controller(argc,argv);
   } else if (strcmp(command,"rep") == 0) {
     cout << "Reporting" << endl;
     // call command method reporter(*argv)
-    reporter(*argv);
+    reporter(argc,argv);
   } else {
     usage(argv[0]);
   }
 
   return EXIT_SUCCESS;
-}
-
-static void usage(const char* progname) {
-  cerr << "Usage: \n"
-       << progname
-       << "\n\tinit [-i <integer>] [-ie <integer>] [-oe <integer>]"
-       << "\n\t     [-n <string>] [-b <integer>] [-d <integer>]"
-       << "\n\t     [-ee <integer>] [-s <integer>] [-q <integer>]"
-       << "\n\treg [-n <string>] {{<filename>} ... | - }"
-       << "\n\tctrl [-s <string>]"
-       << "\n\t\tCTRL subcommands:"
-       << "\n\t\t\tlist [ processing | waiting | reported | reactive | all ]"
-       << "\n\t\t\tupdate { B | D | S } <integer>"
-       << "\n\trep [-s <string>] { -i <integer> | -m <integer> }"
-       << endl;
-  exit(EXIT_FAILURE);
 }
