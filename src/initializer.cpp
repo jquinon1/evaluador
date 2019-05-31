@@ -20,7 +20,7 @@ void delete_shm(const char *shm_name){
   shm_unlink(shm_name);
 }
 
-void create_shm(const char *shm_name,const int num_params, const char *parameters[]){
+void create_shm(const char *shm_name,int num_params,char *parameters[]){
   // Create shm, fails if already exist
   int sm = shm_open(shm_name, O_RDWR | O_CREAT | O_EXCL, 0660);
   // Create shm, truncate an existent if exist
