@@ -1,7 +1,7 @@
 #include "helper.h"
 #include <cstdlib>
 #include <iostream>
-#include <string>
+#include <string.h>
 
 using namespace std;
 
@@ -21,11 +21,9 @@ void usage(char* progname) {
   exit(EXIT_FAILURE);
 }
 
-bool check_valid_param(const int num_args, const char *parameters[],char *param){
-  string argument = param;
-  for (int i = 0; i < num_args; i++) {
-    string parameter = parameters[i];
-    if(argument == parameter) return true;
+bool check_valid_param(const int num_params, const char *parameters[],char *argument){
+  for (int i = 0; i < num_params; i++) {
+    if(strcmp(argument,parameters[i]) == 0) return true;
   }
   return false;
 }
