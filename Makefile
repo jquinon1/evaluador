@@ -10,7 +10,7 @@ all: dirs $(BINDIR)/evaluador
 VPATH := src include build
 
 $(BINDIR)/evaluador: evaluador.o controller.o initializer.o registry.o reporter.o helper.o
-	$(CXX) -o $@ $(LDFLAGS) $^
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
 $(BUILDDIR)/evaluador.o: evaluador.cpp controller.h initializer.h registry.h reporter.h helper.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
@@ -33,7 +33,7 @@ $(BUILDDIR)/helper.o: helper.cpp helper.h
 .PHONY: clean
 
 clean:
-	rm -f $(SRCDIR)/*.cpp~ $(INCLUDE)/*.h~ makefile~
+	rm -f $(SRCDIR)/*.cpp~ $(INCLUDE)/*.h~ Makefile~
 	rm -f -R $(BUILDDIR)
 	rm -f -R $(BINDIR)
 
