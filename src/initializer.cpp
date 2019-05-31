@@ -9,11 +9,15 @@
 
 using namespace std;
 
+// Define allowed options
+const int number_parameters = 9;
+const char *parameters[] = {"-i","-oe","-n","-b","-d","-ee","-s","-q","-ie"};
+
 void initializer(int params_lenght,char *params[]) {
-  // cout << "No implemented yet" << endl;
-  // cout << DEFAULT_INPUT << endl;
-  // un metodo para crear todos los objectos indexados en memoria compartida
-  for (int i = 0; i < params_lenght; i++) {
-    std::cout << params[i] << endl;
+  // Check if the number of params has sense
+  if(params_lenght % 2 != 0 ) usage(params[0]);
+  // Check if params are valid
+  for (int i = 2; i < params_lenght; i+=2) {
+    if(!check_valid_param(number_parameters,parameters,params[i])) usage(params[0]);
   }
 }

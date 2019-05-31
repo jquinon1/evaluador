@@ -14,8 +14,6 @@ int main(int argc, char* argv[]){
   if (argc <= 1) usage(argv[0]);
   char *command = argv[1];
   if (strcmp(command,"init") == 0) {
-    cout << "Initializing" << endl;
-    // call command method initialize(*argv)
     initializer(argc,argv);
   } else if (strcmp(command,"reg") == 0) {
     cout << "registrying" << endl;
