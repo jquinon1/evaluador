@@ -13,7 +13,7 @@
 using namespace std;
 
 // Define allowed options
-const int number_parameters = 9;
+const int number_parameters = 8;
 const char *parameters[] = {"-i","-oe","-n","-b","-d","-ee","-s","-q","-ie"};
 
 void delete_shm(const char *shm_name){

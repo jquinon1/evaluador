@@ -9,7 +9,7 @@ all: dirs $(BINDIR)/evaluador
 
 VPATH := src include build
 
-$(BINDIR)/evaluador: evaluador.o controller.o initializer.o registry.o reporter.o helper.o
+$(BINDIR)/evaluador: evaluador.o controller.o initializer.o registry.o reporter.o stop.o helper.o
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 $(BUILDDIR)/evaluador.o: evaluador.cpp controller.h initializer.h registry.h reporter.h helper.h
@@ -25,6 +25,9 @@ $(BUILDDIR)/registry.o: registry.cpp registry.h helper.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(BUILDDIR)/reporter.o: reporter.cpp reporter.h helper.h
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+$(BUILDDIR)/stop.o: stop.cpp stop.h helper.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(BUILDDIR)/helper.o: helper.cpp helper.h
