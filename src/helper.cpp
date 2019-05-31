@@ -10,13 +10,14 @@ void usage(char* progname) {
        << progname
        << "\n\tinit [-i <integer>] [-ie <integer>] [-oe <integer>]"
        << "\n\t     [-n <string>] [-b <integer>] [-d <integer>]"
-       << "\n\t     [-ee <integer>] [-s <integer>] [-q <integer>]"
+       << "\n\t     [-s <integer>] [-q <integer>]"
        << "\n\treg [-n <string>] {{<filename>} ... | - }"
-       << "\n\tctrl [-s <string>]"
+       << "\n\tctrl [-n <string>]"
        << "\n\t\tCTRL subcommands:"
        << "\n\t\t\tlist [ processing | waiting | reported | reactive | all ]"
        << "\n\t\t\tupdate { B | D | S } <integer>"
-       << "\n\trep [-s <string>] { -i <integer> | -m <integer> }"
+       << "\n\trep [-n <string>] { -i <integer> | -m <integer> }"
+       << "\n\tstop [-n <string>]"
        << endl;
   exit(EXIT_FAILURE);
 }
