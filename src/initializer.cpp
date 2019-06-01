@@ -14,10 +14,28 @@ using namespace std;
 
 // Define allowed options
 const int number_parameters = 8;
-const char *parameters[] = {"-i","-oe","-n","-b","-d","-ee","-s","-q","-ie"};
+const char *parameters[] = {"-i","-ie","-oe","-n","-b","-d","-s","-q"};
+// Control vars
+char const *shared_mem_name = DEFAULT_SHM_NAME;
+int custom_input = DEFAULT_INPUT;
+int custom_input_lenght = DEFAULT_INPUT_LENGHT;
+int custom_output = DEFAULT_OUTPUT;
+int custom_reactive_blood = DEFAULT_REACTIVE_BLOOD;
+int custom_reactive_detritos = DEFAULT_REACTIVE_DETRITOS;
+int custom_reactive_skin = DEFAULT_REACTIVE_SKIN;
+int custom_intern_queues = DEFAULT_INTERN_QUEUES;
 
-void delete_shm(const char *shm_name){
-  shm_unlink(shm_name);
+// TO DO: Assign these values in a better way
+void fill_custom_values(int params_lenght, char *parameters[]){
+  int index;
+  if((index = param_index(params_lenght,parameters,(char *)"-i")) != -1 ) custom_input = atoi(parameters[index+1]);
+  if((index = param_index(params_lenght,parameters,(char *)"-ie")) != -1 ) custom_input_lenght = atoi(parameters[index+1]);
+  if((index = param_index(params_lenght,parameters,(char *)"-oe")) != -1 ) custom_output = atoi(parameters[index+1]);
+  if((index = param_index(params_lenght,parameters,(char *)"-n")) != -1 ) shared_mem_name = parameters[index+1];
+  if((index = param_index(params_lenght,parameters,(char *)"-b")) != -1 ) custom_reactive_blood = atoi(parameters[index+1]);
+  if((index = param_index(params_lenght,parameters,(char *)"-d")) != -1 ) custom_reactive_detritos = atoi(parameters[index+1]);
+  if((index = param_index(params_lenght,parameters,(char *)"-s")) != -1 ) custom_reactive_skin = atoi(parameters[index+1]);
+  if((index = param_index(params_lenght,parameters,(char *)"-q")) != -1 ) custom_intern_queues = atoi(parameters[index+1]);
 }
 
 void create_shm(const char *shm_name,int num_params,char *parameters[]){
@@ -37,31 +55,37 @@ void create_shm(const char *shm_name,int num_params,char *parameters[]){
   }
   // Mapping
   void *mapped;
-  if((mapped = mmap(NULL,sizeof(struct Input),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
+  if((mapped = mmap(NULL,sizeof(struct Inbox),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
     cerr << "Error mapping shared memory: [" << errno << "] " << strerror(errno) << endl;
     exit(EXIT_FAILURE);
   }
   // HERE OR BEFORE, SET THE PARAMETERS YOU GET BY COMMAND LINE AND THEN CREATE RESOURCES
+  // Creating input with the required inboxes
   struct Input *shInput = (struct Input *) mapped;
   shInput->in = 0;
   shInput->out = 0;
   shInput->current = 0;
-  shInput->in = 0;
-
+  shInput->maximun = custom_input;
+  for (int i = 0; i < custom_input; i++) {
+    // Create the required semaphores for each inbox
+    shInput->Inboxes[i].in = 0;
+    shInput->Inboxes[i].out = 0;
+    shInput->Inboxes[i].current = 0;
+    shInput->Inboxes[i].maximun = custom_input_lenght;
+  }
+  // Create Struct for output with semaphores and element
 }
 
 void initializer(int params_lenght,char *params[]) {
   // Check if the number of params has sense
   if(params_lenght % 2 != 0 ) usage(params[0]);
+
   // Check if params are valid
   for (int i = 2; i < params_lenght; i+=2) {
     if(!check_valid_param(number_parameters,parameters,params[i])) usage(params[0]);
   }
+  fill_custom_values(params_lenght,params);
   // Create the shm
-  char const *shared_mem_name = DEFAULT_SHM_NAME;
-  for (int i = 0; i < params_lenght; i+=2) {
-    if(strcmp("-n",params[i]) == 0) shared_mem_name = params[i+1];
-  }
   // create_resources(params_lenght,params);
   create_shm(shared_mem_name,params_lenght,params);
   // delete_shm(shared_mem_name);

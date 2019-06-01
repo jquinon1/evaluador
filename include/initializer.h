@@ -8,7 +8,6 @@
 #define DEFAULT_REACTIVE_DETRITOS 100
 #define DEFAULT_REACTIVE_SKIN 100
 #define DEFAULT_INTERN_QUEUES 6
-#define DEFAULT_ENTRANCES 5
 
 struct exam{
   char sample;

@@ -28,3 +28,10 @@ bool check_valid_param(const int num_params, const char *parameters[],char *argu
   }
   return false;
 }
+
+int param_index(int num_params, char *parameters[], char *param){
+  for (int i = 0; i < num_params; i++) {
+    if(strcmp(param,parameters[i]) == 0) return i;
+  }
+  return -1;
+}
