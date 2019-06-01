@@ -13,18 +13,8 @@
 using namespace std;
 
 // Define allowed options
-const int number_parameters = 8;
-const char *parameters[] = {"-i","-ie","-oe","-n","-b","-d","-s","-q"};
-// Control vars
-char const *shared_mem_name = DEFAULT_SHM_NAME;
-int custom_input = DEFAULT_INPUT;
-int custom_input_lenght = DEFAULT_INPUT_LENGHT;
-int custom_output = DEFAULT_OUTPUT;
-int custom_reactive_blood = DEFAULT_REACTIVE_BLOOD;
-int custom_reactive_detritos = DEFAULT_REACTIVE_DETRITOS;
-int custom_reactive_skin = DEFAULT_REACTIVE_SKIN;
-int custom_intern_queues = DEFAULT_INTERN_QUEUES;
-
+const int init_number_parameters = 8;
+const char *init_parameters[] = {"-i","-ie","-oe","-n","-b","-d","-s","-q"};
 // TO DO: Assign these values in a better way
 void fill_custom_values(int params_lenght, char *parameters[]){
   int index;
@@ -38,7 +28,7 @@ void fill_custom_values(int params_lenght, char *parameters[]){
   if((index = param_index(params_lenght,parameters,(char *)"-q")) != -1 ) custom_intern_queues = atoi(parameters[index+1]);
 }
 
-void create_shm(const char *shm_name,int num_params,char *parameters[]){
+void create_shm(const char *shm_name){
   // Create shm, fails if already exist
   int sm = shm_open(shm_name, O_RDWR | O_CREAT | O_EXCL, 0660);
   // Create shm, truncate an existent if exist
@@ -68,9 +58,9 @@ void create_shm(const char *shm_name,int num_params,char *parameters[]){
   shInput->maximun = custom_input;
   for (int i = 0; i < custom_input; i++) {
     // Create the required semaphores for each inbox
-    string empty_name = "inbox_" + to_string(i) + "_empty";
-    string full_name = "inbox_" + to_string(i) + "_full";
-    string mutex_name = "inbox_" + to_string(i) + "_mutex";
+    string empty_name = string(shm_name) + "_inbox_" + to_string(i) + "_empty";
+    string full_name = string(shm_name) + "_inbox_" + to_string(i) + "_full";
+    string mutex_name = string(shm_name) + "_inbox_" + to_string(i) + "_mutex";
     shInput->Inboxes[i].in = 0;
     shInput->Inboxes[i].out = 0;
     shInput->Inboxes[i].current = 0;
@@ -85,17 +75,11 @@ void create_shm(const char *shm_name,int num_params,char *parameters[]){
 void initializer(int params_lenght,char *params[]) {
   // Check if the number of params has sense
   if(params_lenght % 2 != 0 ) usage(params[0]);
-
   // Check if params are valid
   for (int i = 2; i < params_lenght; i+=2) {
-    if(!check_valid_param(number_parameters,parameters,params[i])) usage(params[0]);
+    if(!check_valid_param(init_number_parameters,init_parameters,params[i])) usage(params[0]);
   }
   fill_custom_values(params_lenght,params);
   // Create the shm
-  // create_resources(params_lenght,params);
-  create_shm(shared_mem_name,params_lenght,params);
-  // delete_shm(shared_mem_name);
-  // for (int i = 2; i < params_lenght; i+=2) {
-  //
-  // }
+  create_shm(shared_mem_name);
 }

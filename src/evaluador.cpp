@@ -29,8 +29,6 @@ int main(int argc, char* argv[]){
     // call command method reporter(*argv)
     reporter(argc,argv);
   } else if (strcmp(command,"stop") == 0) {
-    cout << "Stopping" << endl;
-    // call command method stop(*argv)
     stop(argc,argv);
   } else {
     usage(argv[0]);
