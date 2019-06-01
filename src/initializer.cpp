@@ -68,10 +68,16 @@ void create_shm(const char *shm_name,int num_params,char *parameters[]){
   shInput->maximun = custom_input;
   for (int i = 0; i < custom_input; i++) {
     // Create the required semaphores for each inbox
+    string empty_name = "inbox_" + to_string(i) + "_empty";
+    string full_name = "inbox_" + to_string(i) + "_full";
+    string mutex_name = "inbox_" + to_string(i) + "_mutex";
     shInput->Inboxes[i].in = 0;
     shInput->Inboxes[i].out = 0;
     shInput->Inboxes[i].current = 0;
     shInput->Inboxes[i].maximun = custom_input_lenght;
+    shInput->Inboxes[i].empty = sem_open(empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_input_lenght);
+    shInput->Inboxes[i].full = sem_open(full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
+    shInput->Inboxes[i].mutex = sem_open(mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
   }
   // Create Struct for output with semaphores and element
 }

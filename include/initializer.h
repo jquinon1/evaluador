@@ -1,4 +1,7 @@
 #pragma once
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <semaphore.h>
 
 #define DEFAULT_INPUT 5
 #define DEFAULT_INPUT_LENGHT 6
@@ -15,6 +18,9 @@ struct exam{
 };
 
 struct Inbox{
+  sem_t *full;
+  sem_t *empty;
+  sem_t *mutex;
   int in;
   int out;
   int current;
