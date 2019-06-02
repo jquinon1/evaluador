@@ -17,7 +17,7 @@ struct Inbox{
   int out;
   int current;
   int maximun;
-  struct exam exams[DEFAULT_INPUT_LENGHT];
+  struct exam exams[DEFAULT_INPUT_LENGTH];
 };
 
 struct Input{
@@ -48,4 +48,4 @@ struct Resources{
   int intern_queues;
 };
 
-void initializer(int params_lenght,char* params[]);
+void initializer(int params_length,char* params[]);

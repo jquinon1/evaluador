@@ -76,19 +76,19 @@ void file_registry(const char* sh_name, bool default_shn, char* parameters[]){
   std::cout << "not implemented yet" << '\n';
 }
 
-void registry(int params_lenght,char *params[]) {
+void registry(int params_length,char *params[]) {
   bool default_sh_name = true;
   int index;
-  if((index = param_index(params_lenght,params,(char *)"-n")) != -1 ) {
+  if((index = param_index(params_length,params,(char *)"-n")) != -1 ) {
     shared_mem_name = params[index+1];
     default_sh_name = false;
   }
   // Figure out if interactive or file
-  if( (default_sh_name && params_lenght == 2) || (!default_sh_name && params_lenght == 4) ){
+  if( (default_sh_name && params_length == 2) || (!default_sh_name && params_length == 4) ){
     interactive_registry(shared_mem_name);
   }
 
-  if( (default_sh_name && params_lenght > 2) || (!default_sh_name && params_lenght > 4) ){
-    file_registry(shared_mem_name,default_sh_name,params);
+  if( (default_sh_name && params_length > 2) || (!default_sh_name && params_length > 4) ){
+    file_registry(shared_mem_name,default_sh_name,params,params_length);
   }
 }

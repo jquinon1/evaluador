@@ -4,6 +4,6 @@
 
 using namespace std;
 
-void controller(int params_lenght,char *params[]) {
+void controller(int params_length,char *params[]) {
   cout << "No implemented yet" << endl;
 }

@@ -76,15 +76,15 @@ void delete_sh_resources(const char* sh_mem_name){
   shm_unlink(temp_name.c_str());
 }
 
-void stop(int params_lenght,char *params[]) {
+void stop(int params_length,char *params[]) {
   // Check if the number of params has sense
-  if(params_lenght % 2 != 0 ) usage(params[0]);
+  if(params_length % 2 != 0 ) usage(params[0]);
 
   // Check if params are valid
-  for (int i = 2; i < params_lenght; i+=2) {
+  for (int i = 2; i < params_length; i+=2) {
     if(!check_valid_param(stop_number_parameters,stop_parameters,params[i])) usage(params[0]);
   }
   int index;
-  if((index = param_index(params_lenght,params,(char *)"-n")) != -1 ) shared_mem_name = params[index+1];
+  if((index = param_index(params_length,params,(char *)"-n")) != -1 ) shared_mem_name = params[index+1];
   delete_sh_resources(shared_mem_name);
 }

@@ -16,16 +16,16 @@ using namespace std;
 const int init_number_parameters = 8;
 const char *init_parameters[] = {"-i","-ie","-oe","-n","-b","-d","-s","-q"};
 // TO DO: Assign these values in a better way
-void fill_custom_values(int params_lenght, char *parameters[]){
+void fill_custom_values(int params_length, char *parameters[]){
   int index;
-  if((index = param_index(params_lenght,parameters,(char *)"-i")) != -1 ) custom_input = atoi(parameters[index+1]);
-  if((index = param_index(params_lenght,parameters,(char *)"-ie")) != -1 ) custom_input_lenght = atoi(parameters[index+1]);
-  if((index = param_index(params_lenght,parameters,(char *)"-oe")) != -1 ) custom_output = atoi(parameters[index+1]);
-  if((index = param_index(params_lenght,parameters,(char *)"-n")) != -1 ) shared_mem_name = parameters[index+1];
-  if((index = param_index(params_lenght,parameters,(char *)"-b")) != -1 ) custom_reactive_blood = atoi(parameters[index+1]);
-  if((index = param_index(params_lenght,parameters,(char *)"-d")) != -1 ) custom_reactive_detritos = atoi(parameters[index+1]);
-  if((index = param_index(params_lenght,parameters,(char *)"-s")) != -1 ) custom_reactive_skin = atoi(parameters[index+1]);
-  if((index = param_index(params_lenght,parameters,(char *)"-q")) != -1 ) custom_intern_queues = atoi(parameters[index+1]);
+  if((index = param_index(params_length,parameters,(char *)"-i")) != -1 ) custom_input = atoi(parameters[index+1]);
+  if((index = param_index(params_length,parameters,(char *)"-ie")) != -1 ) custom_input_length = atoi(parameters[index+1]);
+  if((index = param_index(params_length,parameters,(char *)"-oe")) != -1 ) custom_output = atoi(parameters[index+1]);
+  if((index = param_index(params_length,parameters,(char *)"-n")) != -1 ) shared_mem_name = parameters[index+1];
+  if((index = param_index(params_length,parameters,(char *)"-b")) != -1 ) custom_reactive_blood = atoi(parameters[index+1]);
+  if((index = param_index(params_length,parameters,(char *)"-d")) != -1 ) custom_reactive_detritos = atoi(parameters[index+1]);
+  if((index = param_index(params_length,parameters,(char *)"-s")) != -1 ) custom_reactive_skin = atoi(parameters[index+1]);
+  if((index = param_index(params_length,parameters,(char *)"-q")) != -1 ) custom_intern_queues = atoi(parameters[index+1]);
 }
 
 void create_shm(const char *shm_name){
@@ -66,8 +66,8 @@ void create_shm(const char *shm_name){
     shResources->shInput.Inboxes[i].in = 0;
     shResources->shInput.Inboxes[i].out = 0;
     shResources->shInput.Inboxes[i].current = 10;
-    shResources->shInput.Inboxes[i].maximun = custom_input_lenght;
-    if ((shResources->shInput.Inboxes[i].empty = sem_open(input_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_input_lenght)) == SEM_FAILED){
+    shResources->shInput.Inboxes[i].maximun = custom_input_length;
+    if ((shResources->shInput.Inboxes[i].empty = sem_open(input_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_input_length)) == SEM_FAILED){
       exit(EXIT_FAILURE);
     }
     if ((shResources->shInput.Inboxes[i].full = sem_open(input_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0)) == SEM_FAILED){
@@ -103,14 +103,14 @@ void create_shm(const char *shm_name){
   close(sm);
 }
 
-void initializer(int params_lenght,char *params[]) {
+void initializer(int params_length,char *params[]) {
   // Check if the number of params has sense
-  if(params_lenght % 2 != 0 ) usage(params[0]);
+  if(params_length % 2 != 0 ) usage(params[0]);
   // Check if params are valid
-  for (int i = 2; i < params_lenght; i+=2) {
+  for (int i = 2; i < params_length; i+=2) {
     if(!check_valid_param(init_number_parameters,init_parameters,params[i])) usage(params[0]);
   }
-  fill_custom_values(params_lenght,params);
+  fill_custom_values(params_length,params);
   // Create the shm
   create_shm(shared_mem_name);
 }
