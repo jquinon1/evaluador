@@ -20,22 +20,38 @@ void delete_sh_resources(const char* sh_mem_name){
   // Removing semaphores for input
   int sm = shm_open(sh_mem_name, O_RDWR, 0660);
   void *mapped;
-  if((mapped = mmap(NULL,sizeof(struct Inbox),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
+  if((mapped = mmap(NULL,sizeof(struct exam),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
     cerr << "Error mapping shared memory: [" << errno << "] " << strerror(errno) << endl;
     exit(EXIT_FAILURE);
   }
-  struct Input *shInput = (struct Input *) mapped;
-  inboxes = shInput->maximun;
+  struct Resources *shResources = (struct Resources *) mapped;
+  inboxes = shResources->shInput.maximun;
+  std::cout << inboxes << '\n';
   close(sm);
   for (int i = 0; i < inboxes; i++) {
-    string empty_name = string(sh_mem_name) + "_inbox_" + to_string(i) + "_empty";
-    string full_name = string(sh_mem_name) + "_inbox_" + to_string(i) + "_full";
-    string mutex_name = string(sh_mem_name) + "_inbox_" + to_string(i) + "_mutex";
-    sem_unlink(empty_name.c_str());
-    sem_unlink(full_name.c_str());
-    sem_unlink(mutex_name.c_str());
+    string input_empty_name = string(sh_mem_name) + "_inbox_" + to_string(i) + "_empty";
+    string input_full_name = string(sh_mem_name) + "_inbox_" + to_string(i) + "_full";
+    string input_mutex_name = string(sh_mem_name) + "_inbox_" + to_string(i) + "_mutex";
+    if (sem_unlink(input_empty_name.c_str()) != 0) {
+      cerr << "Error delete semaphore: [" << errno << "] " << strerror(errno) << endl;
+      exit(EXIT_FAILURE);
+    }
+    if (sem_unlink(input_full_name.c_str()) != 0) {
+      cerr << "Error delete semaphore: [" << errno << "] " << strerror(errno) << endl;
+      exit(EXIT_FAILURE);
+    }
+    if (sem_unlink(input_mutex_name.c_str()) != 0) {
+      cerr << "Error delete semaphore: [" << errno << "] " << strerror(errno) << endl;
+      exit(EXIT_FAILURE);
+    }
   }
-  // HERE JUST REMOVE THE OUTPUT AND ITS SEMAPHORES
+  // Removing semaphores for output
+  string output_empty_name = string(sh_mem_name) + "_output_empty";
+  string output_full_name = string(sh_mem_name) + "_output_full";
+  string output_mutex_name = string(sh_mem_name) + "_output_mutex";
+  sem_unlink(output_empty_name.c_str());
+  sem_unlink(output_full_name.c_str());
+  sem_unlink(output_mutex_name.c_str());
   // Removing Shared Memory
   string temp_name = "/" + string(sh_mem_name);
   shm_unlink(temp_name.c_str());

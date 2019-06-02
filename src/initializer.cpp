@@ -39,37 +39,58 @@ void create_shm(const char *shm_name){
   }
   // Assign initial space to shared mem, for now 4098
   // TO DO: Assign the right size depending on the objects that need to be created
-  if(ftruncate(sm,4098) != 0){
+  if(ftruncate(sm,sizeof(struct Resources)) != 0){
     cerr << "Error assigning initial size to shared memory: [" << errno << "] " << strerror(errno) << endl;
     exit(EXIT_FAILURE);
   }
-  // Mapping
+  // Mapping for input
   void *mapped;
-  if((mapped = mmap(NULL,sizeof(struct Inbox),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
+
+  if((mapped = mmap(NULL,sizeof(struct exam),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
     cerr << "Error mapping shared memory: [" << errno << "] " << strerror(errno) << endl;
     exit(EXIT_FAILURE);
   }
+
   // HERE OR BEFORE, SET THE PARAMETERS YOU GET BY COMMAND LINE AND THEN CREATE RESOURCES
   // Creating input with the required inboxes
-  struct Input *shInput = (struct Input *) mapped;
-  shInput->in = 0;
-  shInput->out = 0;
-  shInput->current = 0;
-  shInput->maximun = custom_input;
+  struct Resources *shResources = (struct Resources *) mapped;
+  shResources->shInput.in = 0;
+  shResources->shInput.out = 0;
+  shResources->shInput.current = 0;
+  shResources->shInput.maximun = custom_input;
   for (int i = 0; i < custom_input; i++) {
     // Create the required semaphores for each inbox
-    string empty_name = string(shm_name) + "_inbox_" + to_string(i) + "_empty";
-    string full_name = string(shm_name) + "_inbox_" + to_string(i) + "_full";
-    string mutex_name = string(shm_name) + "_inbox_" + to_string(i) + "_mutex";
-    shInput->Inboxes[i].in = 0;
-    shInput->Inboxes[i].out = 0;
-    shInput->Inboxes[i].current = 0;
-    shInput->Inboxes[i].maximun = custom_input_lenght;
-    shInput->Inboxes[i].empty = sem_open(empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_input_lenght);
-    shInput->Inboxes[i].full = sem_open(full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
-    shInput->Inboxes[i].mutex = sem_open(mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
+    string input_empty_name = string(shm_name) + "_inbox_" + to_string(i) + "_empty";
+    string input_full_name = string(shm_name) + "_inbox_" + to_string(i) + "_full";
+    string input_mutex_name = string(shm_name) + "_inbox_" + to_string(i) + "_mutex";
+    shResources->shInput.Inboxes[i].in = 0;
+    shResources->shInput.Inboxes[i].out = 0;
+    shResources->shInput.Inboxes[i].current = 0;
+    shResources->shInput.Inboxes[i].maximun = custom_input_lenght;
+    shResources->shInput.Inboxes[i].empty = sem_open(input_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_input_lenght);
+    shResources->shInput.Inboxes[i].full = sem_open(input_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
+    shResources->shInput.Inboxes[i].mutex = sem_open(input_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
   }
   // Create Struct for output with semaphores and element
+  // CHECK IF WE CAN SET WHERE START THE MAP IF NOT USE A ENTIRE STRUC CALLED RESOURCES AND THEN PUT THERE INPUT AND OUTPUtS
+  // THIS REQUIRES SOME CHANGES, THIS OPTION SHOULD BE THE LAST TO TAKEN IN MIND
+  // void *output_mapped;
+  // if((output_mapped = mmap(NULL,sizeof(struct exam),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
+  //   cerr << "Error mapping shared memory: [" << errno << "] " << strerror(errno) << endl;
+  //   exit(EXIT_FAILURE);
+  // }
+  string output_empty_name = string(shm_name) + "_output_empty";
+  string output_full_name = string(shm_name) + "_output_full";
+  string output_mutex_name = string(shm_name) + "_output_mutex";
+  shResources->shOutput.in = 0;
+  shResources->shOutput.out = 0;
+  shResources->shOutput.current = 0;
+  shResources->shOutput.maximun = custom_output;
+  shResources->shOutput.empty = sem_open(output_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_output);
+  shResources->shOutput.full = sem_open(output_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
+  shResources->shOutput.mutex = sem_open(output_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
+
+  close(sm);
 }
 
 void initializer(int params_lenght,char *params[]) {
