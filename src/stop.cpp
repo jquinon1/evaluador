@@ -24,6 +24,10 @@ void delete_sh_resources(const char* sh_mem_name){
   int queues = 0;
   // Removing semaphores for input
   int sm = shm_open(sh_mem_name, O_RDWR, 0660);
+  if( sm < 0){
+    cerr << "Error opening shared memory: [" << errno << "] "<< strerror(errno) <<endl;
+    exit(EXIT_FAILURE);
+  }
   void *mapped;
   if((mapped = mmap(NULL,sizeof(struct exam),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
     cerr << "Error mapping shared memory: [" << errno << "] " << strerror(errno) << endl;
