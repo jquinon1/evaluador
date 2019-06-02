@@ -42,6 +42,10 @@ struct Output{
 struct Resources{
   struct Input shInput;
   struct Output shOutput;
+  int reactive_blood;
+  int reactive_skin;
+  int reactive_detritos;
+  int intern_queues;
 };
 
 void initializer(int params_lenght,char* params[]);

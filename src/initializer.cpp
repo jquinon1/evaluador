@@ -71,14 +71,7 @@ void create_shm(const char *shm_name){
     shResources->shInput.Inboxes[i].full = sem_open(input_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
     shResources->shInput.Inboxes[i].mutex = sem_open(input_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
   }
-  // Create Struct for output with semaphores and element
-  // CHECK IF WE CAN SET WHERE START THE MAP IF NOT USE A ENTIRE STRUC CALLED RESOURCES AND THEN PUT THERE INPUT AND OUTPUtS
-  // THIS REQUIRES SOME CHANGES, THIS OPTION SHOULD BE THE LAST TO TAKEN IN MIND
-  // void *output_mapped;
-  // if((output_mapped = mmap(NULL,sizeof(struct exam),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
-  //   cerr << "Error mapping shared memory: [" << errno << "] " << strerror(errno) << endl;
-  //   exit(EXIT_FAILURE);
-  // }
+  // Create the required semaphores for output
   string output_empty_name = string(shm_name) + "_output_empty";
   string output_full_name = string(shm_name) + "_output_full";
   string output_mutex_name = string(shm_name) + "_output_mutex";
@@ -89,6 +82,11 @@ void create_shm(const char *shm_name){
   shResources->shOutput.empty = sem_open(output_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_output);
   shResources->shOutput.full = sem_open(output_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
   shResources->shOutput.mutex = sem_open(output_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
+  // Storing needed vars
+  shResources->reactive_blood = custom_reactive_blood;
+  shResources->reactive_detritos = custom_reactive_detritos;
+  shResources->reactive_skin = custom_reactive_skin;
+  shResources->intern_queues = custom_intern_queues;
 
   close(sm);
 }
