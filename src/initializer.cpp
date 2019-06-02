@@ -65,11 +65,17 @@ void create_shm(const char *shm_name){
     string input_mutex_name = string(shm_name) + "_inbox_" + to_string(i) + "_mutex";
     shResources->shInput.Inboxes[i].in = 0;
     shResources->shInput.Inboxes[i].out = 0;
-    shResources->shInput.Inboxes[i].current = 0;
+    shResources->shInput.Inboxes[i].current = 10;
     shResources->shInput.Inboxes[i].maximun = custom_input_lenght;
-    shResources->shInput.Inboxes[i].empty = sem_open(input_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_input_lenght);
-    shResources->shInput.Inboxes[i].full = sem_open(input_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
-    shResources->shInput.Inboxes[i].mutex = sem_open(input_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
+    if ((shResources->shInput.Inboxes[i].empty = sem_open(input_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_input_lenght)) == SEM_FAILED){
+      exit(EXIT_FAILURE);
+    }
+    if ((shResources->shInput.Inboxes[i].full = sem_open(input_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0)) == SEM_FAILED){
+      exit(EXIT_FAILURE);
+    }
+    if ((shResources->shInput.Inboxes[i].mutex = sem_open(input_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1)) == SEM_FAILED){
+      exit(EXIT_FAILURE);
+    }
   }
   // Create the required semaphores for output
   string output_empty_name = string(shm_name) + "_output_empty";
@@ -79,9 +85,15 @@ void create_shm(const char *shm_name){
   shResources->shOutput.out = 0;
   shResources->shOutput.current = 0;
   shResources->shOutput.maximun = custom_output;
-  shResources->shOutput.empty = sem_open(output_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_output);
-  shResources->shOutput.full = sem_open(output_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
-  shResources->shOutput.mutex = sem_open(output_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
+  if ((shResources->shOutput.empty = sem_open(output_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_output)) == SEM_FAILED){
+    exit(EXIT_FAILURE);
+  }
+  if ((shResources->shOutput.full = sem_open(output_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0)) == SEM_FAILED){
+    exit(EXIT_FAILURE);
+  }
+  if ((shResources->shOutput.mutex = sem_open(output_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1)) == SEM_FAILED){
+    exit(EXIT_FAILURE);
+  }
   // Storing needed vars
   shResources->reactive_blood = custom_reactive_blood;
   shResources->reactive_detritos = custom_reactive_detritos;

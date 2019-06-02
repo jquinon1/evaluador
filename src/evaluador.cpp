@@ -17,8 +17,6 @@ int main(int argc, char* argv[]){
   if (strcmp(command,"init") == 0) {
     initializer(argc,argv);
   } else if (strcmp(command,"reg") == 0) {
-    cout << "registrying" << endl;
-    // call command method registry(*argv)
     registry(argc,argv);
   } else if (strcmp(command,"ctrl") == 0) {
     cout << "Controlling" << endl;
