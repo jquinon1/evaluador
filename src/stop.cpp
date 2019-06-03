@@ -47,6 +47,7 @@ void delete_sh_resources(const char* sh_mem_name){
       exit(EXIT_FAILURE);
     }
   }
+  sem_unlink("general_input_mutex");
   // Removing semaphores for output
   string output_empty_name = string(sh_mem_name) + "_output_empty";
   string output_full_name = string(sh_mem_name) + "_output_full";

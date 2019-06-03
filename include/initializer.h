@@ -5,6 +5,10 @@
 #include "default.h"
 
 struct exam{
+  int id;
+  bool processing;
+  bool waiting;
+  bool reported;
   char sample;
   int quantity;
 };
@@ -21,8 +25,7 @@ struct Inbox{
 };
 
 struct Input{
-  int in;
-  int out;
+  sem_t *mutex;
   int maximun;
   int current;
   struct Inbox Inboxes[DEFAULT_INPUT];

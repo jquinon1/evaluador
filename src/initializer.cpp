@@ -54,10 +54,9 @@ void create_shm(const char *shm_name){
   // HERE OR BEFORE, SET THE PARAMETERS YOU GET BY COMMAND LINE AND THEN CREATE RESOURCES
   // Creating input with the required inboxes
   struct Resources *shResources = (struct Resources *) mapped;
-  shResources->shInput.in = 0;
-  shResources->shInput.out = 0;
   shResources->shInput.current = 0;
   shResources->shInput.maximun = custom_input;
+  shResources->shInput.mutex = sem_open("general_input_mutex",O_CREAT | O_EXCL, 0660,1);
   for (int i = 0; i < custom_input; i++) {
     // Create the required semaphores for each inbox
     string input_empty_name = string(shm_name) + "_inbox_" + to_string(i) + "_empty";
@@ -65,7 +64,7 @@ void create_shm(const char *shm_name){
     string input_mutex_name = string(shm_name) + "_inbox_" + to_string(i) + "_mutex";
     shResources->shInput.Inboxes[i].in = 0;
     shResources->shInput.Inboxes[i].out = 0;
-    shResources->shInput.Inboxes[i].current = 10;
+    shResources->shInput.Inboxes[i].current = 0;
     shResources->shInput.Inboxes[i].maximun = custom_input_length;
     if ((shResources->shInput.Inboxes[i].empty = sem_open(input_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_input_length)) == SEM_FAILED){
       exit(EXIT_FAILURE);

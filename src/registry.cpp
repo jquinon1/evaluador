@@ -42,7 +42,6 @@ void interactive_registry(const char* shm_name){
     int inbox = atoi(metadata[0].c_str());
     char sample_type = (char)metadata[1][0];
     int sample_quantity = atoi(metadata[2].c_str());
-    std::cout << inbox << sample_type << sample_quantity << '\n';
     // Opening semaphores
     string input_empty_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_empty";
     string input_full_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_full";
@@ -56,10 +55,20 @@ void interactive_registry(const char* shm_name){
     if ((shResources->shInput.Inboxes[inbox].mutex = sem_open(input_mutex_name.c_str(), 0)) == SEM_FAILED){
       exit(EXIT_FAILURE);
     }
+    // Get the id for the exam
+    shResources->shInput.mutex = sem_open("general_input_mutex", 0);
+    sem_wait(shResources->shInput.mutex);
+    int exam_id = shResources->shInput.current;
+    shResources->shInput.current++;
+    sem_post(shResources->shInput.mutex);
     // Create exam
     sem_wait(shResources->shInput.Inboxes[inbox].empty);
     sem_wait(shResources->shInput.Inboxes[inbox].mutex);
     int position = shResources->shInput.Inboxes[inbox].in;
+    shResources->shInput.Inboxes[inbox].exams[position].id = exam_id;
+    shResources->shInput.Inboxes[inbox].exams[position].processing = false;
+    shResources->shInput.Inboxes[inbox].exams[position].waiting = true;
+    shResources->shInput.Inboxes[inbox].exams[position].reported = false;
     shResources->shInput.Inboxes[inbox].exams[position].sample = sample_type;
     shResources->shInput.Inboxes[inbox].exams[position].quantity = sample_quantity;
     shResources->shInput.Inboxes[inbox].in = (shResources->shInput.Inboxes[inbox].in + 1) % shResources->shInput.Inboxes[inbox].maximun;
@@ -67,8 +76,8 @@ void interactive_registry(const char* shm_name){
     sem_post(shResources->shInput.Inboxes[inbox].mutex);
     sem_post(shResources->shInput.Inboxes[inbox].full);
 
-    string sample_id = string(shm_name)+"_IN_"+to_string(inbox)+"_"+to_string(position);
-    cout << sample_id << endl;
+    // string sample_id = string(shm_name)+"_IN_"+to_string(inbox)+"_"+to_string(position);
+    cout << exam_id << endl;
     getline(cin,input);
   }
   close(sm);
@@ -115,7 +124,6 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         int inbox = atoi(metadata[0].c_str());
         char sample_type = (char)metadata[1][0];
         int sample_quantity = atoi(metadata[2].c_str());
-        std::cout << inbox << sample_type << sample_quantity << '\n';
         // Opening semaphores
         string input_empty_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_empty";
         string input_full_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_full";
@@ -129,10 +137,20 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         if ((shResources->shInput.Inboxes[inbox].mutex = sem_open(input_mutex_name.c_str(), 0)) == SEM_FAILED){
           exit(EXIT_FAILURE);
         }
+        // Get the id for the exam
+        shResources->shInput.mutex = sem_open("general_input_mutex", 0);
+        sem_wait(shResources->shInput.mutex);
+        int exam_id = shResources->shInput.current;
+        shResources->shInput.current++;
+        sem_post(shResources->shInput.mutex);
         // Create exam
         sem_wait(shResources->shInput.Inboxes[inbox].empty);
         sem_wait(shResources->shInput.Inboxes[inbox].mutex);
         int position = shResources->shInput.Inboxes[inbox].in;
+        shResources->shInput.Inboxes[inbox].exams[position].id = exam_id;
+        shResources->shInput.Inboxes[inbox].exams[position].processing = false;
+        shResources->shInput.Inboxes[inbox].exams[position].waiting = true;
+        shResources->shInput.Inboxes[inbox].exams[position].reported = false;
         shResources->shInput.Inboxes[inbox].exams[position].sample = sample_type;
         shResources->shInput.Inboxes[inbox].exams[position].quantity = sample_quantity;
         shResources->shInput.Inboxes[inbox].in = (shResources->shInput.Inboxes[inbox].in + 1) % shResources->shInput.Inboxes[inbox].maximun;
@@ -140,8 +158,8 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         sem_post(shResources->shInput.Inboxes[inbox].mutex);
         sem_post(shResources->shInput.Inboxes[inbox].full);
 
-        string sample_id = string(shm_name)+"_IN_"+to_string(inbox)+"_"+to_string(position);
-        outfile << sample_id << endl;
+        // string sample_id = string(shm_name)+"_IN_"+to_string(inbox)+"_"+to_string(position);
+        outfile << exam_id << endl;
       }
       outfile.close();
       infile.close();
