@@ -56,7 +56,8 @@ void create_shm(const char *shm_name){
   struct Resources *shResources = (struct Resources *) mapped;
   shResources->shInput.current = 0;
   shResources->shInput.maximun = custom_input;
-  shResources->shInput.mutex = sem_open("general_input_mutex",O_CREAT | O_EXCL, 0660,1);
+  string input_semaphore_name = string(shm_name) + "_general_input_mutex";
+  shResources->shInput.mutex = sem_open(input_semaphore_name.c_str(),O_CREAT | O_EXCL, 0660,1);
   for (int i = 0; i < custom_input; i++) {
     // Create the required semaphores for each inbox
     string input_empty_name = string(shm_name) + "_inbox_" + to_string(i) + "_empty";

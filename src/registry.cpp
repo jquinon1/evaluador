@@ -56,7 +56,8 @@ void interactive_registry(const char* shm_name){
       exit(EXIT_FAILURE);
     }
     // Get the id for the exam
-    shResources->shInput.mutex = sem_open("general_input_mutex", 0);
+    string input_semaphore_name = string(shm_name) + "_general_input_mutex";
+    shResources->shInput.mutex = sem_open(input_semaphore_name.c_str(), 0);
     sem_wait(shResources->shInput.mutex);
     int exam_id = shResources->shInput.current;
     shResources->shInput.current++;
@@ -138,7 +139,8 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
           exit(EXIT_FAILURE);
         }
         // Get the id for the exam
-        shResources->shInput.mutex = sem_open("general_input_mutex", 0);
+        string input_semaphore_name = string(shm_name) + "_general_input_mutex";
+        shResources->shInput.mutex = sem_open(input_semaphore_name.c_str(), 0);
         sem_wait(shResources->shInput.mutex);
         int exam_id = shResources->shInput.current;
         shResources->shInput.current++;
