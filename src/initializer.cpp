@@ -98,7 +98,6 @@ void create_shm(const char *shm_name){
   shResources->reactive_blood = custom_reactive_blood;
   shResources->reactive_detritos = custom_reactive_detritos;
   shResources->reactive_skin = custom_reactive_skin;
-  shResources->intern_queues = custom_intern_queues;
 
   close(sm);
 }

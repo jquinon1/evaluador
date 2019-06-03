@@ -17,11 +17,10 @@ const char *stop_parameters[] = {"-n"};
 
 void delete_sh_resources(const char* sh_mem_name){
   int inboxes = 0;
-  int outputs = 0;
-  int blood = 0;
-  int detritos = 0;
-  int skin = 0;
-  int queues = 0;
+  // int outputs = 0;
+  // int blood = 0;
+  // int detritos = 0;
+  // int skin = 0;
   // Removing semaphores for input
   int sm = shm_open(sh_mem_name, O_RDWR, 0660);
   if( sm < 0){
@@ -34,18 +33,16 @@ void delete_sh_resources(const char* sh_mem_name){
     exit(EXIT_FAILURE);
   }
   struct Resources *shResources = (struct Resources *) mapped;
-  blood = shResources->reactive_blood;
-  detritos = shResources->reactive_detritos;
-  skin = shResources->reactive_skin;
-  queues = shResources->intern_queues;
-  outputs = shResources->shOutput.maximun;
+  // blood = shResources->reactive_blood;
+  // detritos = shResources->reactive_detritos;
+  // skin = shResources->reactive_skin;
+  // outputs = shResources->shOutput.maximun;
   inboxes = shResources->shInput.maximun;
-  std::cout << inboxes << '\n';
-  std::cout << outputs << '\n';
-  std::cout << blood << '\n';
-  std::cout << detritos << '\n';
-  std::cout << skin << '\n';
-  std::cout << queues << '\n';
+  // std::cout << inboxes << '\n';
+  // std::cout << outputs << '\n';
+  // std::cout << blood << '\n';
+  // std::cout << detritos << '\n';
+  // std::cout << skin << '\n';
   close(sm);
   for (int i = 0; i < inboxes; i++) {
     string input_empty_name = string(sh_mem_name) + "_inbox_" + to_string(i) + "_empty";
