@@ -20,14 +20,42 @@ const char *init_parameters[] = {"-i","-ie","-oe","-n","-b","-d","-s","-q"};
 // 0 -> B
 // 1 -> D
 // 2 -> S
-const int SAMPLES_TYPE = 3;
 struct intern_queue samples_type[SAMPLES_TYPE];
 
 void* evaluator(void *arg){
   struct thread_args *arguments = (struct thread_args *)arg;
   int inbox = arguments->inbox_to_lister;
   string temp_name = "/" + string(arguments->shm_name);
-  // std::cout << inbox << '\n';
+  int sm = shm_open(temp_name.c_str(), O_RDWR, 0660);
+  if( sm < 0){
+    cerr << "Error opening shared memory: [" << errno << "] "<< strerror(errno) <<endl;
+    exit(EXIT_FAILURE);
+  }
+  void *mapped;
+  if((mapped = mmap(NULL,sizeof(struct exam),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
+    cerr << "Error mapping shared memory: [" << errno << "] " << strerror(errno) << endl;
+    exit(EXIT_FAILURE);
+  }
+  struct Resources *shResources = (struct Resources *) mapped;
+  sem_t *intern_empty, *intern_full, *intern_mutex;
+  string intern_empty_name = string(arguments->shm_name) + "_intern_" + to_string(inbox) + "_empty";
+  string intern_full_name = string(arguments->shm_name) + "_intern_" + to_string(inbox) + "_full";
+  string intern_mutex_name = string(arguments->shm_name) + "_intern_" + to_string(inbox) + "_mutex";
+  intern_empty = sem_open(intern_empty_name.c_str(), 0);
+  intern_full = sem_open(intern_full_name.c_str(), 0);
+  intern_mutex = sem_open(intern_mutex_name.c_str(), 0);
+  exam returned = {};
+  while (true) {
+    sem_wait(intern_full);
+    sem_wait(intern_mutex);
+    int get = samples_type[inbox].out;
+    returned = samples_type[inbox].exams[get];
+    samples_type[inbox].out = (get + 1) % samples_type[inbox].maximun;
+    samples_type[inbox].current--;
+    sem_post(intern_mutex);
+    sem_post(intern_empty);
+    std::cout << "Gathered exam: " << returned.id <<'\n';
+  }
   return NULL;
 }
 
@@ -50,20 +78,37 @@ void* pre_evaluator(void *arg){
   string input_empty_name = string(arguments->shm_name) + "_inbox_" + to_string(inbox) + "_empty";
   string input_full_name = string(arguments->shm_name) + "_inbox_" + to_string(inbox) + "_full";
   string input_mutex_name = string(arguments->shm_name) + "_inbox_" + to_string(inbox) + "_mutex";
-  sem_t *thread_empty, *thread_full, *thread_mutex;
+  sem_t *thread_empty, *thread_full, *thread_mutex, *intern_empty, *intern_full, *intern_mutex;
   thread_empty = sem_open(input_empty_name.c_str(), 0);
   thread_full = sem_open(input_full_name.c_str(), 0);
   thread_mutex = sem_open(input_mutex_name.c_str(), 0);
-  // getting exam
   struct exam exam = {};
   while (true) {
     sem_wait(thread_full);
     sem_wait(thread_mutex);
     int exam_position = shResources->shInput.Inboxes[inbox].out;
+    // getting exam
     exam = shResources->shInput.Inboxes[inbox].exams[exam_position];
+    int sample_type = (exam.sample == 'B') ? 0 : (exam.sample == 'D') ? 1 : 2;
+    string intern_empty_name = string(arguments->shm_name) + "_intern_" + to_string(sample_type) + "_empty";
+    string intern_full_name = string(arguments->shm_name) + "_intern_" + to_string(sample_type) + "_full";
+    string intern_mutex_name = string(arguments->shm_name) + "_intern_" + to_string(sample_type) + "_mutex";
+    intern_empty = sem_open(intern_empty_name.c_str(), 0);
+    intern_full = sem_open(intern_full_name.c_str(), 0);
+    intern_mutex = sem_open(intern_mutex_name.c_str(), 0);
+    sem_wait(intern_empty);
+    sem_wait(intern_mutex);
+    int entry_pos = samples_type[sample_type].in;
+    samples_type[sample_type].exams[entry_pos] = exam;
+    samples_type[sample_type].exams[entry_pos].processing = true;
+    samples_type[sample_type].exams[entry_pos].waiting = false;
+    samples_type[sample_type].exams[entry_pos].reported = false;
+    samples_type[sample_type].in = (entry_pos + 1) % samples_type[sample_type].maximun;
+    samples_type[sample_type].current++;
+    sem_post(intern_mutex);
+    sem_post(intern_full);
     shResources->shInput.Inboxes[inbox].out = (exam_position + 1) % shResources->shInput.Inboxes[inbox].maximun;
     shResources->shInput.Inboxes[inbox].current--;
-    std::cout << exam.id << '\n';
     sem_post(thread_mutex);
     sem_post(thread_empty);
   }
@@ -144,12 +189,12 @@ void create_shm(const char *shm_name){
 
   close(sm);
   // Fill intern queues values
-  string intern_empty_name = string(shm_name) + "_intern_empty";
-  string intern_full_name = string(shm_name) + "_intern_full";
-  string intern_mutex_name = string(shm_name) + "_intern_mutex";
   for (int i = 0; i < SAMPLES_TYPE; i++) {
-    sem_open(intern_empty_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
-    sem_open(intern_full_name.c_str(),O_CREAT | O_EXCL, 0660, custom_intern_queues);
+    string intern_empty_name = string(shm_name)+ "_intern_" + to_string(i)  + "_empty";
+    string intern_full_name = string(shm_name) + "_intern_" + to_string(i) + "_full";
+    string intern_mutex_name = string(shm_name)+ "_intern_" + to_string(i)  + "_mutex";
+    sem_open(intern_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_intern_queues);
+    sem_open(intern_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
     sem_open(intern_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
     samples_type[i].in = 0;
     samples_type[i].out = 0;
@@ -172,7 +217,7 @@ void initializer(int params_length,char *params[]) {
   const int MAX_THREADS = 100;
   pthread_t pre_evaluators[MAX_THREADS];
   pthread_t evaluators[SAMPLES_TYPE];
-  sleep(30);
+  // sleep(30);
   for (int i = 0; i < custom_input; i++) {
     thread_args *args = (thread_args *)malloc(sizeof(thread_args));
     args->shm_name = (char*)shared_mem_name;

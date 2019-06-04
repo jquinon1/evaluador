@@ -7,6 +7,7 @@
 #define DEFAULT_REACTIVE_DETRITOS 100
 #define DEFAULT_REACTIVE_SKIN 100
 #define DEFAULT_INTERN_QUEUES 6
+#define SAMPLES_TYPE 3
 
 // Control vars
 extern char const *shared_mem_name;

@@ -58,12 +58,14 @@ void delete_sh_resources(const char* sh_mem_name){
   sem_unlink(output_full_name.c_str());
   sem_unlink(output_mutex_name.c_str());
   // Removing semaphores for intern queues
-  string intern_empty_name = string(sh_mem_name) + "_intern_empty";
-  string intern_full_name = string(sh_mem_name) + "_intern_full";
-  string intern_mutex_name = string(sh_mem_name) + "_intern_mutex";
-  sem_unlink(intern_empty_name.c_str());
-  sem_unlink(intern_full_name.c_str());
-  sem_unlink(intern_mutex_name.c_str());
+  for (int i = 0; i < SAMPLES_TYPE; i++) {
+    string intern_empty_name = string(sh_mem_name)+ "_intern_" + to_string(i)  + "_empty";
+    string intern_full_name = string(sh_mem_name) + "_intern_" + to_string(i) + "_full";
+    string intern_mutex_name = string(sh_mem_name)+ "_intern_" + to_string(i)  + "_mutex";
+    sem_unlink(intern_empty_name.c_str());
+    sem_unlink(intern_full_name.c_str());
+    sem_unlink(intern_mutex_name.c_str());
+  }
   // Removing Shared Memory
   shm_unlink(temp_name.c_str());
 }

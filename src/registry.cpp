@@ -42,6 +42,11 @@ void interactive_registry(const char* shm_name){
     int inbox = atoi(metadata[0].c_str());
     char sample_type = (char)metadata[1][0];
     int sample_quantity = atoi(metadata[2].c_str());
+    if ((sample_type != 'B') && (sample_type != 'D') && (sample_type != 'S')) {
+      cerr << "Error: Unknown Sample Type: " << sample_type<<endl;
+      cerr << "Valid are [ B | D | S ]" << endl;
+      exit(EXIT_FAILURE);
+    }
     // Opening semaphores
     string input_empty_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_empty";
     string input_full_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_full";
@@ -121,6 +126,11 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         int inbox = atoi(metadata[0].c_str());
         char sample_type = (char)metadata[1][0];
         int sample_quantity = atoi(metadata[2].c_str());
+        if ((sample_type != 'B') && (sample_type != 'D') && (sample_type != 'S')) {
+          cerr << "Error: Unknown Sample Type: " << sample_type<<endl;
+          cerr << "Valid are [ B | D | S ]" << endl;
+          exit(EXIT_FAILURE);
+        }
         // Opening semaphores
         string input_empty_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_empty";
         string input_full_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_full";
