@@ -37,19 +37,35 @@ void* evaluator(void *arg){
     exit(EXIT_FAILURE);
   }
   struct Resources *shResources = (struct Resources *) mapped;
-  sem_t *intern_empty, *intern_full, *intern_mutex;
+  sem_t *intern_empty, *intern_full, *intern_mutex, *output_mutex, *output_full, *output_empty;
   string intern_empty_name = string(arguments->shm_name) + "_intern_" + to_string(inbox) + "_empty";
   string intern_full_name = string(arguments->shm_name) + "_intern_" + to_string(inbox) + "_full";
   string intern_mutex_name = string(arguments->shm_name) + "_intern_" + to_string(inbox) + "_mutex";
   intern_empty = sem_open(intern_empty_name.c_str(), 0);
   intern_full = sem_open(intern_full_name.c_str(), 0);
   intern_mutex = sem_open(intern_mutex_name.c_str(), 0);
+  string output_empty_name = string(arguments->shm_name) + "_output_empty";
+  string output_full_name = string(arguments->shm_name) + "_output_full";
+  string output_mutex_name = string(arguments->shm_name) + "_output_mutex";
+  output_empty = sem_open(output_empty_name.c_str(), 0);
+  output_full = sem_open(output_full_name.c_str(), 0);
+  output_mutex = sem_open(output_mutex_name.c_str(), 0);
   exam returned = {};
   while (true) {
     sem_wait(intern_full);
     sem_wait(intern_mutex);
     int get = samples_type[inbox].out;
+    // here change this for a method which return the sample processed
     returned = samples_type[inbox].exams[get];
+    // Put the processed sample in output
+    sem_wait(output_empty);
+    sem_wait(output_mutex);
+    int output_position_in = shResources->shOutput.in;
+    shResources->shOutput.exams_ready[output_position_in] = returned;
+    shResources->shOutput.in = (output_position_in + 1) % shResources->shOutput.maximun;
+    shResources->shOutput.current++;
+    sem_post(output_mutex);
+    sem_post(output_full);
     samples_type[inbox].out = (get + 1) % samples_type[inbox].maximun;
     samples_type[inbox].current--;
     sem_post(intern_mutex);
