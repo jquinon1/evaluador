@@ -14,9 +14,6 @@ struct exam{
 };
 
 struct Inbox{
-  sem_t *full;
-  sem_t *empty;
-  sem_t *mutex;
   int in;
   int out;
   int current;
@@ -32,9 +29,6 @@ struct Input{
 };
 
 struct Output{
-  sem_t *full;
-  sem_t *empty;
-  sem_t *mutex;
   int in;
   int out;
   int current;
@@ -48,6 +42,19 @@ struct Resources{
   int reactive_blood;
   int reactive_skin;
   int reactive_detritos;
+};
+
+struct intern_queue{
+  int in;
+  int out;
+  int current;
+  int maximun;
+  struct exam exams[DEFAULT_INTERN_QUEUES];
+};
+
+struct thread_args{
+  char *shm_name;
+  int inbox_to_lister;
 };
 
 void initializer(int params_length,char* params[]);

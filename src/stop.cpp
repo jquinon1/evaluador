@@ -17,7 +17,8 @@ const char *stop_parameters[] = {"-n"};
 
 void delete_sh_resources(const char* sh_mem_name){
   int inboxes = 0;
-  int sm = shm_open(sh_mem_name, O_RDWR, 0660);
+  string temp_name = "/" + string(sh_mem_name);
+  int sm = shm_open(temp_name.c_str(), O_RDWR, 0660);
   if( sm < 0){
     cerr << "Error opening shared memory: [" << errno << "] "<< strerror(errno) <<endl;
     exit(EXIT_FAILURE);
@@ -56,8 +57,14 @@ void delete_sh_resources(const char* sh_mem_name){
   sem_unlink(output_empty_name.c_str());
   sem_unlink(output_full_name.c_str());
   sem_unlink(output_mutex_name.c_str());
+  // Removing semaphores for intern queues
+  string intern_empty_name = string(sh_mem_name) + "_intern_empty";
+  string intern_full_name = string(sh_mem_name) + "_intern_full";
+  string intern_mutex_name = string(sh_mem_name) + "_intern_mutex";
+  sem_unlink(intern_empty_name.c_str());
+  sem_unlink(intern_full_name.c_str());
+  sem_unlink(intern_mutex_name.c_str());
   // Removing Shared Memory
-  string temp_name = "/" + string(sh_mem_name);
   shm_unlink(temp_name.c_str());
 }
 

@@ -46,25 +46,21 @@ void interactive_registry(const char* shm_name){
     string input_empty_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_empty";
     string input_full_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_full";
     string input_mutex_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_mutex";
-    if ((shResources->shInput.Inboxes[inbox].empty = sem_open(input_empty_name.c_str(), 0)) == SEM_FAILED){
-      exit(EXIT_FAILURE);
-    }
-    if ((shResources->shInput.Inboxes[inbox].full = sem_open(input_full_name.c_str(), 0)) == SEM_FAILED){
-      exit(EXIT_FAILURE);
-    }
-    if ((shResources->shInput.Inboxes[inbox].mutex = sem_open(input_mutex_name.c_str(), 0)) == SEM_FAILED){
-      exit(EXIT_FAILURE);
-    }
+    sem_t *registry_empty, *registry_full, *registry_mutex, *registry_general_input;
+
+    registry_empty = sem_open(input_empty_name.c_str(), 0);
+    registry_full = sem_open(input_full_name.c_str(), 0);
+    registry_mutex = sem_open(input_mutex_name.c_str(), 0);
     // Get the id for the exam
     string input_semaphore_name = string(shm_name) + "_general_input_mutex";
-    shResources->shInput.mutex = sem_open(input_semaphore_name.c_str(), 0);
-    sem_wait(shResources->shInput.mutex);
+    registry_general_input = sem_open(input_semaphore_name.c_str(), 0);
+    sem_wait(registry_general_input);
     int exam_id = shResources->shInput.current;
     shResources->shInput.current++;
-    sem_post(shResources->shInput.mutex);
+    sem_post(registry_general_input);
     // Create exam
-    sem_wait(shResources->shInput.Inboxes[inbox].empty);
-    sem_wait(shResources->shInput.Inboxes[inbox].mutex);
+    sem_wait(registry_empty);
+    sem_wait(registry_mutex);
     int position = shResources->shInput.Inboxes[inbox].in;
     shResources->shInput.Inboxes[inbox].exams[position].id = exam_id;
     shResources->shInput.Inboxes[inbox].exams[position].processing = false;
@@ -74,8 +70,8 @@ void interactive_registry(const char* shm_name){
     shResources->shInput.Inboxes[inbox].exams[position].quantity = sample_quantity;
     shResources->shInput.Inboxes[inbox].in = (shResources->shInput.Inboxes[inbox].in + 1) % shResources->shInput.Inboxes[inbox].maximun;
     shResources->shInput.Inboxes[inbox].current++;
-    sem_post(shResources->shInput.Inboxes[inbox].mutex);
-    sem_post(shResources->shInput.Inboxes[inbox].full);
+    sem_post(registry_mutex);
+    sem_post(registry_full);
 
     // string sample_id = string(shm_name)+"_IN_"+to_string(inbox)+"_"+to_string(position);
     cout << exam_id << endl;
@@ -129,25 +125,21 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         string input_empty_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_empty";
         string input_full_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_full";
         string input_mutex_name = string(shm_name) + "_inbox_" + to_string(inbox) + "_mutex";
-        if ((shResources->shInput.Inboxes[inbox].empty = sem_open(input_empty_name.c_str(), 0)) == SEM_FAILED){
-          exit(EXIT_FAILURE);
-        }
-        if ((shResources->shInput.Inboxes[inbox].full = sem_open(input_full_name.c_str(), 0)) == SEM_FAILED){
-          exit(EXIT_FAILURE);
-        }
-        if ((shResources->shInput.Inboxes[inbox].mutex = sem_open(input_mutex_name.c_str(), 0)) == SEM_FAILED){
-          exit(EXIT_FAILURE);
-        }
+        sem_t *registry_empty, *registry_full, *registry_mutex, *registry_general_input;
+
+        registry_empty = sem_open(input_empty_name.c_str(), 0);
+        registry_full = sem_open(input_full_name.c_str(), 0);
+        registry_mutex = sem_open(input_mutex_name.c_str(), 0);
         // Get the id for the exam
         string input_semaphore_name = string(shm_name) + "_general_input_mutex";
-        shResources->shInput.mutex = sem_open(input_semaphore_name.c_str(), 0);
-        sem_wait(shResources->shInput.mutex);
+        registry_general_input = sem_open(input_semaphore_name.c_str(), 0);
+        sem_wait(registry_general_input);
         int exam_id = shResources->shInput.current;
         shResources->shInput.current++;
-        sem_post(shResources->shInput.mutex);
+        sem_post(registry_general_input);
         // Create exam
-        sem_wait(shResources->shInput.Inboxes[inbox].empty);
-        sem_wait(shResources->shInput.Inboxes[inbox].mutex);
+        sem_wait(registry_empty);
+        sem_wait(registry_mutex);
         int position = shResources->shInput.Inboxes[inbox].in;
         shResources->shInput.Inboxes[inbox].exams[position].id = exam_id;
         shResources->shInput.Inboxes[inbox].exams[position].processing = false;
@@ -157,8 +149,8 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         shResources->shInput.Inboxes[inbox].exams[position].quantity = sample_quantity;
         shResources->shInput.Inboxes[inbox].in = (shResources->shInput.Inboxes[inbox].in + 1) % shResources->shInput.Inboxes[inbox].maximun;
         shResources->shInput.Inboxes[inbox].current++;
-        sem_post(shResources->shInput.Inboxes[inbox].mutex);
-        sem_post(shResources->shInput.Inboxes[inbox].full);
+        sem_post(registry_mutex);
+        sem_post(registry_full);
 
         // string sample_id = string(shm_name)+"_IN_"+to_string(inbox)+"_"+to_string(position);
         outfile << exam_id << endl;
