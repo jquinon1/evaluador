@@ -48,6 +48,7 @@ void ctrl_update(const char *shm_name,const char *input){
 void interactive_controller(const char *shm_name){
   string input;
   char delimiter = ' ';
+  cout << ">" ;
   getline(cin,input);
   while ( input != "EOF") {
     // Getting command
@@ -60,6 +61,7 @@ void interactive_controller(const char *shm_name){
     }
     if (command == "list") ctrl_list(shm_name,input.c_str());
     if (command == "update") ctrl_update(shm_name,input.c_str());
+    cout << ">" ;
     getline(cin,input);
   }
 }

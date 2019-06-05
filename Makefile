@@ -27,8 +27,8 @@ $(BUILDDIR)/registry.o: registry.cpp registry.h helper.h default.h
 $(BUILDDIR)/reporter.o: reporter.cpp reporter.h helper.h default.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-	$(BUILDDIR)/list.o: list.cpp list.h helper.h default.h
-		$(CXX) $(CXXFLAGS) -o $@ -c $<
+$(BUILDDIR)/list.o: list.cpp list.h helper.h default.h
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(BUILDDIR)/stop.o: stop.cpp stop.h helper.h default.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
