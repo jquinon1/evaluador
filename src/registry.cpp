@@ -176,6 +176,7 @@ void registry(int params_length,char *params[]) {
   bool default_sh_name = true;
   int index;
   if((index = param_index(params_length,params,(char *)"-n")) != -1 ) {
+    if( params[index+1] == NULL ) usage(params[0]);
     shared_mem_name = params[index+1];
     default_sh_name = false;
   }
