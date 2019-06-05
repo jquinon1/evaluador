@@ -62,6 +62,9 @@ void* evaluator(void *arg){
     sem_wait(output_mutex);
     int output_position_in = shResources->shOutput.in;
     shResources->shOutput.exams_ready[output_position_in] = returned;
+    shResources->shOutput.exams_ready[output_position_in].reported = true;
+    shResources->shOutput.exams_ready[output_position_in].waiting = false;
+    shResources->shOutput.exams_ready[output_position_in].processing = false;
     shResources->shOutput.in = (output_position_in + 1) % shResources->shOutput.maximun;
     shResources->shOutput.current++;
     sem_post(output_mutex);
@@ -123,6 +126,7 @@ void* pre_evaluator(void *arg){
     samples_type[sample_type].current++;
     sem_post(intern_mutex);
     sem_post(intern_full);
+    shResources->shInput.Inboxes[inbox].exams[exam_position].waiting = false;
     shResources->shInput.Inboxes[inbox].out = (exam_position + 1) % shResources->shInput.Inboxes[inbox].maximun;
     shResources->shInput.Inboxes[inbox].current--;
     sem_post(thread_mutex);

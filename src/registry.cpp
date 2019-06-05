@@ -73,6 +73,7 @@ void interactive_registry(const char* shm_name){
     shResources->shInput.Inboxes[inbox].exams[position].reported = false;
     shResources->shInput.Inboxes[inbox].exams[position].sample = sample_type;
     shResources->shInput.Inboxes[inbox].exams[position].quantity = sample_quantity;
+    shResources->shInput.Inboxes[inbox].exams[position].inbox = inbox;
     shResources->shInput.Inboxes[inbox].in = (shResources->shInput.Inboxes[inbox].in + 1) % shResources->shInput.Inboxes[inbox].maximun;
     shResources->shInput.Inboxes[inbox].current++;
     sem_post(registry_mutex);
@@ -117,7 +118,6 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
       char delimiter = ' ';
       string metadata[3];
       while (getline(infile, input)){
-        std::cout << input << '\n';
         for (int i = 0; i < 3; i++) {
           string data = input.substr(0,input.find(delimiter)).c_str();
           input = input.substr(input.find(delimiter)+1);
@@ -157,6 +157,7 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         shResources->shInput.Inboxes[inbox].exams[position].reported = false;
         shResources->shInput.Inboxes[inbox].exams[position].sample = sample_type;
         shResources->shInput.Inboxes[inbox].exams[position].quantity = sample_quantity;
+        shResources->shInput.Inboxes[inbox].exams[position].inbox = inbox;
         shResources->shInput.Inboxes[inbox].in = (shResources->shInput.Inboxes[inbox].in + 1) % shResources->shInput.Inboxes[inbox].maximun;
         shResources->shInput.Inboxes[inbox].current++;
         sem_post(registry_mutex);

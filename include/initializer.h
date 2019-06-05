@@ -9,6 +9,7 @@ struct exam{
   bool processing;
   bool waiting;
   bool reported;
+  int inbox;
   char sample;
   int quantity;
 };
