@@ -36,7 +36,9 @@ void ctrl_list_waiting(const char *shm_name){
   struct Resources *shResources = (struct Resources *) mapped;
   cout << "Waiting:" << endl;
   if(shResources->shInput.current == 0) return;
+  custom_input = shResources->shInput.maximun;
   for (int i = 0; i < custom_input; i++) {
+    custom_input_length = shResources->shInput.Inboxes[i].maximun;
     for (int j = 0; j < custom_input_length; j++) {
       exam current_exam = shResources->shInput.Inboxes[i].exams[j];
       if( current_exam.waiting){
@@ -66,6 +68,7 @@ void ctrl_list_reported(const char *shm_name){
   struct Resources *shResources = (struct Resources *) mapped;
   cout << "Waiting:" << endl;
   if(shResources->shInput.current == 0) return;
+  custom_output = shResources->shOutput.maximun;
   for (int i = 0; i < custom_output; i++) {
     exam result = shResources->shOutput.exams_ready[i];
     if( result.reported){
