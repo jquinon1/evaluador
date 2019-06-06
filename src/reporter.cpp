@@ -11,7 +11,48 @@ const int rep_number_parameters = 3;
 const char *rep_parameters[] = {"-n","-i","-m"};
 
 void time_out(const char *shm_name, int indicator){
-  std::cout << "not implemented yet" << '\n';
+  string temp_name = "/" + string(shm_name);
+  int sm = shm_open(temp_name.c_str(), O_RDWR, 0660);
+  if( sm < 0){
+    cerr << "Error opening shared memory: [" << errno << "] "<< strerror(errno) <<endl;
+    exit(EXIT_FAILURE);
+  }
+  void *mapped;
+  if((mapped = mmap(NULL,sizeof(struct exam),PROT_READ | PROT_WRITE, MAP_SHARED,sm,0)) == MAP_FAILED){
+    cerr << "Error mapping shared memory: [" << errno << "] " << strerror(errno) << endl;
+    exit(EXIT_FAILURE);
+  }
+  struct Resources *shResources = (struct Resources *) mapped;
+  sem_t *output_mutex, *output_full, *output_empty;
+  string output_empty_name = string(shm_name) + "_output_empty";
+  string output_full_name = string(shm_name) + "_output_full";
+  string output_mutex_name = string(shm_name) + "_output_mutex";
+  output_empty = sem_open(output_empty_name.c_str(), 0);
+  output_full = sem_open(output_full_name.c_str(), 0);
+  output_mutex = sem_open(output_mutex_name.c_str(), 0);
+  struct timespec tm;
+  clock_gettime(CLOCK_REALTIME, &tm);
+  tm.tv_sec += indicator;
+  while (sem_timedwait( output_full, &tm ) != -1) {
+    // sem_wait(output_full);
+    sem_wait(output_mutex);
+    int output_position_out = shResources->shOutput.out;
+    exam result = shResources->shOutput.exams_ready[output_position_out];
+    shResources->shOutput.exams_ready[output_position_out].reported = false;
+    shResources->shOutput.exams_ready[output_position_out].waiting = false;
+    shResources->shOutput.exams_ready[output_position_out].processing = false;
+    shResources->shOutput.out = (output_position_out + 1) % shResources->shOutput.maximun;
+    shResources->shOutput.current--;
+    cout << "["
+    << result.id << " "
+    << result.inbox << " "
+    << result.sample << " "
+    << "NOTHING YET]"
+    << endl;
+    sem_post(output_mutex);
+    sem_post(output_empty);
+  }
+  close(sm);
 }
 
 void times(const char *shm_name, int indicator){
