@@ -57,6 +57,11 @@ void* evaluator(void *arg){
     int get = samples_type[inbox].out;
     // here change this for a method which return the sample processed
     returned = samples_type[inbox].exams[get];
+    samples_type[inbox].exams[get].processing = false;
+    samples_type[inbox].out = (get + 1) % samples_type[inbox].maximun;
+    samples_type[inbox].current--;
+    sem_post(intern_mutex);
+    sem_post(intern_empty);
     // Put the processed sample in output
     sem_wait(output_empty);
     sem_wait(output_mutex);
@@ -69,10 +74,6 @@ void* evaluator(void *arg){
     shResources->shOutput.current++;
     sem_post(output_mutex);
     sem_post(output_full);
-    samples_type[inbox].out = (get + 1) % samples_type[inbox].maximun;
-    samples_type[inbox].current--;
-    sem_post(intern_mutex);
-    sem_post(intern_empty);
     std::cout << "Gathered exam: " << returned.id <<'\n';
   }
   return NULL;
@@ -108,6 +109,11 @@ void* pre_evaluator(void *arg){
     int exam_position = shResources->shInput.Inboxes[inbox].out;
     // getting exam
     exam = shResources->shInput.Inboxes[inbox].exams[exam_position];
+    shResources->shInput.Inboxes[inbox].exams[exam_position].waiting = false;
+    shResources->shInput.Inboxes[inbox].out = (exam_position + 1) % shResources->shInput.Inboxes[inbox].maximun;
+    shResources->shInput.Inboxes[inbox].current--;
+    sem_post(thread_mutex);
+    sem_post(thread_empty);
     int sample_type = (exam.sample == 'B') ? 0 : (exam.sample == 'D') ? 1 : 2;
     string intern_empty_name = string(arguments->shm_name) + "_intern_" + to_string(sample_type) + "_empty";
     string intern_full_name = string(arguments->shm_name) + "_intern_" + to_string(sample_type) + "_full";
@@ -126,11 +132,6 @@ void* pre_evaluator(void *arg){
     samples_type[sample_type].current++;
     sem_post(intern_mutex);
     sem_post(intern_full);
-    shResources->shInput.Inboxes[inbox].exams[exam_position].waiting = false;
-    shResources->shInput.Inboxes[inbox].out = (exam_position + 1) % shResources->shInput.Inboxes[inbox].maximun;
-    shResources->shInput.Inboxes[inbox].current--;
-    sem_post(thread_mutex);
-    sem_post(thread_empty);
   }
   close(sm);
   return NULL;
