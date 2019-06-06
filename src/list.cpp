@@ -51,6 +51,7 @@ void ctrl_list_waiting(const char *shm_name){
       }
     }
   }
+  close(sm);
 }
 
 void ctrl_list_reported(const char *shm_name){
@@ -66,7 +67,7 @@ void ctrl_list_reported(const char *shm_name){
     exit(EXIT_FAILURE);
   }
   struct Resources *shResources = (struct Resources *) mapped;
-  cout << "Waiting:" << endl;
+  cout << "Reported:" << endl;
   if(shResources->shInput.current == 0) return;
   custom_output = shResources->shOutput.maximun;
   for (int i = 0; i < custom_output; i++) {
@@ -80,6 +81,7 @@ void ctrl_list_reported(const char *shm_name){
       << endl;
     }
   }
+  close(sm);
 }
 
 void ctrl_list_reactive(const char *shm_name){

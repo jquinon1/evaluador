@@ -21,8 +21,6 @@ int main(int argc, char* argv[]){
   } else if (strcmp(command,"ctrl") == 0) {
     controller(argc,argv);
   } else if (strcmp(command,"rep") == 0) {
-    cout << "Reporting" << endl;
-    // call command method reporter(*argv)
     reporter(argc,argv);
   } else if (strcmp(command,"stop") == 0) {
     stop(argc,argv);
