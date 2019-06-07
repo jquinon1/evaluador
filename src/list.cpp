@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cerrno>
 #include <cstring>
+#include <time.h>
 
 using namespace std;
 
@@ -19,6 +20,39 @@ void ctrl_list_processing(const char *shm_name){
     exit(EXIT_FAILURE);
   }
   struct Resources *shResources = (struct Resources *) mapped;
+  cout << "Processing:" << endl;
+  if(shResources->shInput.current == 0) return;
+  exam current_exam;
+  for (int i = 0; i < SAMPLES_TYPE; i++) {
+    custom_intern_queues = shResources->copy_intern[i].maximun;
+    for (int j = 0; j < custom_intern_queues; j++) {
+      current_exam = shResources->copy_intern[i].exams[j];
+      if( current_exam.processing ){
+        struct timespec tms;
+        clock_gettime(CLOCK_REALTIME, &tms);
+        cout << "["
+        << current_exam.id << " "
+        << current_exam.inbox << " "
+        << current_exam.sample << " "
+        << current_exam.quantity << " "
+        << (tms.tv_sec - current_exam.processing_time.tv_sec) << "]"
+        << endl;
+      }
+    }
+    current_exam = shResources->evaluating[i];
+    if( current_exam.processing ){
+      struct timespec tms;
+      clock_gettime(CLOCK_REALTIME, &tms);
+      cout << "["
+      << current_exam.id << " "
+      << current_exam.inbox << " "
+      << current_exam.sample << " "
+      << current_exam.quantity << " "
+      << (tms.tv_sec - current_exam.processing_time.tv_sec) << "]"
+      << endl;
+    }
+  }
+  close(sm);
 }
 
 void ctrl_list_waiting(const char *shm_name){

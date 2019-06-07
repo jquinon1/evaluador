@@ -47,7 +47,7 @@ void time_out(const char *shm_name, int indicator){
     << result.id << " "
     << result.inbox << " "
     << result.sample << " "
-    << "NOTHING YET]"
+    << result.results << "]"
     << endl;
     sem_post(output_mutex);
     sem_post(output_empty);

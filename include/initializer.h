@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <semaphore.h>
 #include "default.h"
+#include <time.h>
 
 struct exam{
   int id;
@@ -13,6 +14,7 @@ struct exam{
   char sample;
   int quantity;
   int results;
+  struct timespec processing_time;
 };
 
 struct Inbox{
@@ -24,7 +26,6 @@ struct Inbox{
 };
 
 struct Input{
-  sem_t *mutex;
   int maximun;
   int current;
   struct Inbox Inboxes[DEFAULT_INPUT];
@@ -38,14 +39,6 @@ struct Output{
   struct exam exams_ready[DEFAULT_OUTPUT];
 };
 
-struct Resources{
-  struct Input shInput;
-  struct Output shOutput;
-  int reactive_blood;
-  int reactive_skin;
-  int reactive_detritos;
-};
-
 struct intern_queue{
   int in;
   int out;
@@ -53,6 +46,17 @@ struct intern_queue{
   int maximun;
   struct exam exams[DEFAULT_INTERN_QUEUES];
 };
+
+struct Resources{
+  struct Input shInput;
+  struct Output shOutput;
+  struct intern_queue copy_intern[SAMPLES_TYPE];
+  struct exam evaluating[SAMPLES_TYPE];
+  int reactive_blood;
+  int reactive_skin;
+  int reactive_detritos;
+};
+
 
 struct thread_args{
   char *shm_name;

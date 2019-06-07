@@ -10,6 +10,7 @@
 #include <cstring>
 #include <errno.h>
 #include <pthread.h>
+#include <thread>
 
 using namespace std;
 
@@ -54,7 +55,13 @@ void* evaluator(void *arg){
   while (true) {
     sem_wait(intern_full);
     sem_wait(intern_mutex);
+    // Getting the copy of the exam
+    int copied_exam_out = shResources->copy_intern[inbox].out;
+    struct exam copied_exam = shResources->copy_intern[inbox].exams[copied_exam_out];
+    shResources->copy_intern[inbox].out = (copied_exam_out + 1) % shResources->copy_intern[inbox].maximun;
+    shResources->copy_intern[inbox].current--;
     int get = samples_type[inbox].out;
+    shResources->copy_intern[inbox].exams[copied_exam_out].processing = false;
     // here change this for a method which return the sample processed
     returned = samples_type[inbox].exams[get];
     samples_type[inbox].exams[get].processing = false;
@@ -62,9 +69,29 @@ void* evaluator(void *arg){
     samples_type[inbox].current--;
     sem_post(intern_mutex);
     sem_post(intern_empty);
+    // Putting the examn in the evaluating list (shared)
+    int random;
+    switch (inbox) {
+      case 0:
+        random = 1 + ( std::rand() % ( 7 - 1 + 1 ) );
+        break;
+      case 1:
+        random = 5 + ( std::rand() % ( 20 - 5 + 1 ) );
+        break;
+      case 2:
+        random = 8 + ( std::rand() % ( 25 - 8 + 1 ) );
+        break;
+      default:
+        exit(EXIT_FAILURE);
+    }
+    shResources->evaluating[inbox] = copied_exam;
+    std::cout << inbox << '\n';
+    this_thread::sleep_for (std::chrono::seconds(random));
+    // processing the sample
     // Put the processed sample in output
     sem_wait(output_empty);
     sem_wait(output_mutex);
+    shResources->evaluating[inbox].processing = false;
     int output_position_in = shResources->shOutput.in;
     shResources->shOutput.exams_ready[output_position_in] = returned;
     shResources->shOutput.exams_ready[output_position_in].reported = true;
@@ -112,6 +139,7 @@ void* pre_evaluator(void *arg){
     shResources->shInput.Inboxes[inbox].exams[exam_position].waiting = false;
     shResources->shInput.Inboxes[inbox].out = (exam_position + 1) % shResources->shInput.Inboxes[inbox].maximun;
     shResources->shInput.Inboxes[inbox].current--;
+    clock_gettime(CLOCK_REALTIME,&exam.processing_time);
     sem_post(thread_mutex);
     sem_post(thread_empty);
     int sample_type = (exam.sample == 'B') ? 0 : (exam.sample == 'D') ? 1 : 2;
@@ -123,6 +151,15 @@ void* pre_evaluator(void *arg){
     intern_mutex = sem_open(intern_mutex_name.c_str(), 0);
     sem_wait(intern_empty);
     sem_wait(intern_mutex);
+    // Copying only not relevant info to shared memory to be able to list processing samples
+    int copy_entry_point = shResources->copy_intern[sample_type].in;
+    shResources->copy_intern[sample_type].exams[copy_entry_point] = exam;
+    shResources->copy_intern[sample_type].exams[copy_entry_point].processing = true;
+    shResources->copy_intern[sample_type].exams[copy_entry_point].waiting = false;
+    shResources->copy_intern[sample_type].exams[copy_entry_point].reported = false;
+    shResources->copy_intern[sample_type].in = (copy_entry_point + 1) % shResources->copy_intern[sample_type].maximun;
+    shResources->copy_intern[sample_type].current++;
+    // Putting the exam in the intern queue
     int entry_pos = samples_type[sample_type].in;
     samples_type[sample_type].exams[entry_pos] = exam;
     samples_type[sample_type].exams[entry_pos].processing = true;
@@ -202,6 +239,12 @@ void create_shm(const char *shm_name){
   sem_open(output_empty_name.c_str(),O_CREAT | O_EXCL, 0660, custom_output);
   sem_open(output_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
   sem_open(output_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
+  for (int i = 0; i < SAMPLES_TYPE; i++) {
+    shResources->copy_intern[i].in = 0;
+    shResources->copy_intern[i].out = 0;
+    shResources->copy_intern[i].current = 0;
+    shResources->copy_intern[i].maximun = custom_intern_queues;
+  }
   // Storing needed vars
   shResources->reactive_blood = custom_reactive_blood;
   shResources->reactive_detritos = custom_reactive_detritos;
@@ -232,6 +275,13 @@ void initializer(int params_length,char *params[]) {
   }
   fill_custom_values(params_length,params);
   // Create the shm
+  // struct timespec tm;
+  // clock_gettime(CLOCK_REALTIME, &tm);
+  // std::cout << tm.tv_sec << '\n';
+  // sleep(10);
+  // struct timespec tms;
+  // clock_gettime(CLOCK_REALTIME, &tms);
+  // std::cout << (tms.tv_sec - tm.tv_sec) << '\n';
   create_shm(shared_mem_name);
   // Launch evaluators
   const int MAX_THREADS = 100;
