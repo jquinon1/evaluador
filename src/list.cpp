@@ -106,12 +106,14 @@ void ctrl_list_reported(const char *shm_name){
   custom_output = shResources->shOutput.maximun;
   for (int i = 0; i < custom_output; i++) {
     exam result = shResources->shOutput.exams_ready[i];
+    // get result type
+    char exam_result = (result.results <= 15 ) ? '?' : (result.results <= 35) ? 'N' : 'P';
     if( result.reported){
       cout << "["
       << result.id << " "
       << result.inbox << " "
       << result.sample << " "
-      << result.results << "]"
+      << exam_result << "]"
       << endl;
     }
   }

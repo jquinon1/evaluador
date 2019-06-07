@@ -84,8 +84,12 @@ void* evaluator(void *arg){
       default:
         exit(EXIT_FAILURE);
     }
+    std::cout << random << '\n';
     shResources->evaluating[inbox] = copied_exam;
     this_thread::sleep_for (std::chrono::seconds(random));
+    // Getting the result
+    int exam_result = 1 + (rand() % (50 - 1 + 1) );
+    returned.results = exam_result;
     // processing the sample
     // Put the processed sample in output
     sem_wait(output_empty);

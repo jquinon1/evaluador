@@ -43,11 +43,13 @@ void time_out(const char *shm_name, int indicator){
     shResources->shOutput.exams_ready[output_position_out].processing = false;
     shResources->shOutput.out = (output_position_out + 1) % shResources->shOutput.maximun;
     shResources->shOutput.current--;
+    // get result type
+    char exam_result = (result.results <= 15 ) ? '?' : (result.results <= 35) ? 'N' : 'P';
     cout << "["
     << result.id << " "
     << result.inbox << " "
     << result.sample << " "
-    << result.results << "]"
+    << exam_result << "]"
     << endl;
     sem_post(output_mutex);
     sem_post(output_empty);
@@ -85,11 +87,13 @@ void times(const char *shm_name, int indicator){
     shResources->shOutput.exams_ready[output_position_out].processing = false;
     shResources->shOutput.out = (output_position_out + 1) % shResources->shOutput.maximun;
     shResources->shOutput.current--;
+    // get result type
+    char exam_result = (result.results <= 15 ) ? '?' : (result.results <= 35) ? 'N' : 'P';
     cout << "["
     << result.id << " "
     << result.inbox << " "
     << result.sample << " "
-    << result.results << "]"
+    << exam_result << "]"
     << endl;
     sem_post(output_mutex);
     sem_post(output_empty);
