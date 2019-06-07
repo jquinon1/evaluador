@@ -246,13 +246,8 @@ void create_shm(const char *shm_name){
   }
   // Storing needed vars
   string reactive_names[] = {"blood","detritos","skin"};
-  int reactive_values[] = {custom_reactive_blood,custom_reactive_detritos,custom_reactive_skin};
   for (int i = 0; i < SAMPLES_TYPE; i++) {
-    string reactive_empty_name = string(shm_name)+ "_" + reactive_names[i]  + "_empty";
-    string reactive_full_name = string(shm_name) + "_" + reactive_names[i] + "_full";
     string reactive_mutex_name = string(shm_name)+ "_" + reactive_names[i]  + "_mutex";
-    sem_open(reactive_empty_name.c_str(),O_CREAT | O_EXCL, 0660, reactive_values[i]);
-    sem_open(reactive_full_name.c_str(),O_CREAT | O_EXCL, 0660, 0);
     sem_open(reactive_mutex_name.c_str(),O_CREAT | O_EXCL, 0660, 1);
   }
   shResources->reactive_blood = custom_reactive_blood;

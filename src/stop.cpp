@@ -57,6 +57,12 @@ void delete_sh_resources(const char* sh_mem_name){
   sem_unlink(output_empty_name.c_str());
   sem_unlink(output_full_name.c_str());
   sem_unlink(output_mutex_name.c_str());
+  // Removing helper semaphores
+  string reactive_names[] = {"blood","detritos","skin"};
+  for (int i = 0; i < SAMPLES_TYPE; i++) {
+    string reactive_mutex_name = string(shm_name)+ "_" + reactive_names[i]  + "_mutex";
+    sem_unlink(reactive_mutex_name.c_str());
+  }
   // Removing semaphores for intern queues
   for (int i = 0; i < SAMPLES_TYPE; i++) {
     string intern_empty_name = string(sh_mem_name)+ "_intern_" + to_string(i)  + "_empty";
