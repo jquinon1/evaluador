@@ -12,6 +12,7 @@ struct exam{
   int inbox;
   char sample;
   int quantity;
+  int results;
 };
 
 struct Inbox{

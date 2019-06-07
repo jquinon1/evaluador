@@ -89,7 +89,7 @@ void times(const char *shm_name, int indicator){
     << result.id << " "
     << result.inbox << " "
     << result.sample << " "
-    << "NOTHING YET]"
+    << result.results << "]"
     << endl;
     sem_post(output_mutex);
     sem_post(output_empty);
@@ -109,7 +109,6 @@ void reporter(int params_length,char *params[]) {
   if((index = param_index(params_length,params,(char *)"-n")) != -1 ) shared_mem_name = params[index+1];
   char *option = (index == -1) ? params[2] : params[index+2];
   int indicator = (index == -1) ? atoi(params[3]) : atoi(params[index+3]);
-  std::cout << option << indicator << '\n';
   if(strcmp(option,"-i") == 0) time_out(shared_mem_name,indicator);
   if(strcmp(option,"-m") == 0) times(shared_mem_name,indicator);
 }

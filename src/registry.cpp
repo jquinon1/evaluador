@@ -74,6 +74,7 @@ void interactive_registry(const char* shm_name){
     shResources->shInput.Inboxes[inbox].exams[position].sample = sample_type;
     shResources->shInput.Inboxes[inbox].exams[position].quantity = sample_quantity;
     shResources->shInput.Inboxes[inbox].exams[position].inbox = inbox;
+    shResources->shInput.Inboxes[inbox].exams[position].results = -1;
     shResources->shInput.Inboxes[inbox].in = (shResources->shInput.Inboxes[inbox].in + 1) % shResources->shInput.Inboxes[inbox].maximun;
     shResources->shInput.Inboxes[inbox].current++;
     sem_post(registry_mutex);
@@ -158,6 +159,7 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         shResources->shInput.Inboxes[inbox].exams[position].sample = sample_type;
         shResources->shInput.Inboxes[inbox].exams[position].quantity = sample_quantity;
         shResources->shInput.Inboxes[inbox].exams[position].inbox = inbox;
+        shResources->shInput.Inboxes[inbox].exams[position].results = -1;
         shResources->shInput.Inboxes[inbox].in = (shResources->shInput.Inboxes[inbox].in + 1) % shResources->shInput.Inboxes[inbox].maximun;
         shResources->shInput.Inboxes[inbox].current++;
         sem_post(registry_mutex);

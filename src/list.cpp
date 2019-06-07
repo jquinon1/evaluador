@@ -77,7 +77,7 @@ void ctrl_list_reported(const char *shm_name){
       << result.id << " "
       << result.inbox << " "
       << result.sample << " "
-      << "NOTHING YET]"
+      << result.results << "]"
       << endl;
     }
   }

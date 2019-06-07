@@ -158,7 +158,6 @@ void create_shm(const char *shm_name){
     cerr << "Error creating shared memory: [" << errno << "] "<< strerror(errno) <<endl;
     exit(EXIT_FAILURE);
   }
-  // Assign initial space to shared mem, for now 4098
   // TO DO: Assign the right size depending on the objects that need to be created
   if(ftruncate(sm,sizeof(struct Resources)) != 0){
     cerr << "Error assigning initial size to shared memory: [" << errno << "] " << strerror(errno) << endl;
