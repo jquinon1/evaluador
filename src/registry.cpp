@@ -63,6 +63,25 @@ void interactive_registry(const char* shm_name){
     int exam_id = shResources->shInput.current;
     shResources->shInput.current++;
     sem_post(registry_general_input);
+    // Check if it's possible put the exam
+    sem_t *sample_semaphore;
+    string sample = (sample_type == 'B') ? "blood" : (sample_type == 'D') ? "detritos" : "skin";
+    string sample_semaphore_name = string(shm_name) + "_" + sample + "_mutex";
+    sample_semaphore = sem_open(sample_semaphore_name.c_str(),0);
+    if (sample_type == 'B') {
+      while (shResources->reactive_blood - sample_quantity < 0) {}
+      sem_wait(sample_semaphore);
+      shResources->reactive_blood -= sample_quantity;
+    } else if (sample_type == 'D') {
+      while (shResources->reactive_detritos - sample_quantity < 0) {}
+      sem_wait(sample_semaphore);
+      shResources->reactive_detritos -= sample_quantity;
+    } else {
+      while (shResources->reactive_skin - sample_quantity < 0) {}
+      sem_wait(sample_semaphore);
+      shResources->reactive_skin -= sample_quantity;
+    }
+    sem_post(sample_semaphore);
     // Create exam
     sem_wait(registry_empty);
     sem_wait(registry_mutex);
@@ -148,6 +167,25 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
         int exam_id = shResources->shInput.current;
         shResources->shInput.current++;
         sem_post(registry_general_input);
+        // Check if it's possible put the exam
+        sem_t *sample_semaphore;
+        string sample = (sample_type == 'B') ? "blood" : (sample_type == 'D') ? "detritos" : "skin";
+        string sample_semaphore_name = string(shm_name) + "_" + sample + "_mutex";
+        sample_semaphore = sem_open(sample_semaphore_name.c_str(),0);
+        if (sample_type == 'B') {
+          while (shResources->reactive_blood - sample_quantity < 0) {}
+          sem_wait(sample_semaphore);
+          shResources->reactive_blood -= sample_quantity;
+        } else if (sample_type == 'D') {
+          while (shResources->reactive_detritos - sample_quantity < 0) {}
+          sem_wait(sample_semaphore);
+          shResources->reactive_detritos -= sample_quantity;
+        } else {
+          while (shResources->reactive_skin - sample_quantity < 0) {}
+          sem_wait(sample_semaphore);
+          shResources->reactive_skin -= sample_quantity;
+        }
+        sem_post(sample_semaphore);
         // Create exam
         sem_wait(registry_empty);
         sem_wait(registry_mutex);

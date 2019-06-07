@@ -85,7 +85,6 @@ void* evaluator(void *arg){
         exit(EXIT_FAILURE);
     }
     shResources->evaluating[inbox] = copied_exam;
-    std::cout << inbox << '\n';
     this_thread::sleep_for (std::chrono::seconds(random));
     // processing the sample
     // Put the processed sample in output
@@ -101,7 +100,7 @@ void* evaluator(void *arg){
     shResources->shOutput.current++;
     sem_post(output_mutex);
     sem_post(output_full);
-    std::cout << "Gathered exam: " << returned.id <<'\n';
+    // std::cout << "Gathered exam: " << returned.id <<'\n';
   }
   return NULL;
 }
@@ -284,14 +283,6 @@ void initializer(int params_length,char *params[]) {
     if(!check_valid_param(init_number_parameters,init_parameters,params[i])) usage(params[0]);
   }
   fill_custom_values(params_length,params);
-  // Create the shm
-  // struct timespec tm;
-  // clock_gettime(CLOCK_REALTIME, &tm);
-  // std::cout << tm.tv_sec << '\n';
-  // sleep(10);
-  // struct timespec tms;
-  // clock_gettime(CLOCK_REALTIME, &tms);
-  // std::cout << (tms.tv_sec - tm.tv_sec) << '\n';
   create_shm(shared_mem_name);
   // Launch evaluators
   const int MAX_THREADS = 100;
