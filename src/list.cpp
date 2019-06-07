@@ -131,4 +131,8 @@ void ctrl_list_reactive(const char *shm_name){
     exit(EXIT_FAILURE);
   }
   struct Resources *shResources = (struct Resources *) mapped;
+  cout << "Blood: " << shResources->reactive_blood << endl;
+  cout << "Detritus: " << shResources->reactive_detritos << endl;
+  cout << "Skin: " << shResources->reactive_skin << endl;
+  close(sm);
 }

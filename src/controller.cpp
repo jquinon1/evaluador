@@ -2,6 +2,7 @@
 #include <iostream>
 #include "helper.h"
 #include "list.h"
+#include "update.h"
 
 using namespace std;
 // Define allowed options
@@ -42,7 +43,15 @@ void ctrl_list(const char *shm_name, const char *input){
 }
 
 void ctrl_update(const char *shm_name,const char *input){
-  std::cout << input << '\n';
+  // Get the sample
+  string local_input = string(input);
+  char delimiter = ' ';
+  string data = local_input.substr(0,local_input.find(delimiter)).c_str();
+  local_input = local_input.substr(local_input.find(delimiter)+1);
+  int value = atoi(local_input.c_str());
+  if( data == "B" ) update_blood(shm_name,value);
+  if( data == "D" ) update_detritus(shm_name,value);
+  if( data == "S" ) update_skin(shm_name,value);
 }
 
 void interactive_controller(const char *shm_name){
