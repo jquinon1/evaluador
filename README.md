@@ -21,7 +21,10 @@ This is because I can't find a way to store dynamic arrays in a shared memory.
 
 To run this project follow these steps.
 
-1. Build the binaries
+1. create required folders and build the binaries
+```bash
+make dirs
+```
 ```bash
 make
 ```
