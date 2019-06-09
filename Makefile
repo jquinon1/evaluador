@@ -53,3 +53,4 @@ clean:
 dirs:
 	@test -d build || mkdir build
 	@test -d bin || mkdir bin
+	@test -d examples || mkdir examples
