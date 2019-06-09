@@ -130,8 +130,9 @@ void file_registry(const char* shm_name, bool default_shn, char* parameters[],in
   for (int i = start; i < parameters_length; i++) {
     if( file_exists(string(parameters[i]) ) ) {
       // Get the directory
-      char *current_location = get_current_dir_name();
-      string outputfile = string(current_location).substr(0,string(current_location).find(repo_name)+strlen(repo_name)) + "/examples/" + string(parameters[i]).substr(0,string(parameters[i]).rfind('.')) + ".spl";
+      // char *current_location = get_current_dir_name();
+      // string outputfile = string(current_location).substr(0,string(current_location).find(repo_name)+strlen(repo_name)) + "/examples/" + string(parameters[i]).substr(0,string(parameters[i]).rfind('.')) + ".spl";
+      string outputfile = string(parameters[i]).substr(0,string(parameters[i]).rfind('.')) + ".spl";
       ifstream infile(parameters[i]);
       ofstream outfile(outputfile);
       string input;

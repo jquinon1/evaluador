@@ -46,7 +46,7 @@ void update_detritus(const char *shm_name, int value){
   string semaphore_mutex_name = string(shm_name)+ "_detritos_mutex";
   semaphore_mutex = sem_open(semaphore_mutex_name.c_str(), 0);
   sem_wait(semaphore_mutex);
-  shResources->reactive_blood += value;
+  shResources->reactive_detritos += value;
   sem_post(semaphore_mutex);
   close(sm);
 }
@@ -68,7 +68,7 @@ void update_skin(const char *shm_name, int value){
   string semaphore_mutex_name = string(shm_name)+ "_skin_mutex";
   semaphore_mutex = sem_open(semaphore_mutex_name.c_str(), 0);
   sem_wait(semaphore_mutex);
-  shResources->reactive_blood += value;
+  shResources->reactive_skin += value;
   sem_post(semaphore_mutex);
   close(sm);
 }

@@ -60,9 +60,9 @@ void* evaluator(void *arg){
     struct exam copied_exam = shResources->copy_intern[inbox].exams[copied_exam_out];
     shResources->copy_intern[inbox].out = (copied_exam_out + 1) % shResources->copy_intern[inbox].maximun;
     shResources->copy_intern[inbox].current--;
-    int get = samples_type[inbox].out;
     shResources->copy_intern[inbox].exams[copied_exam_out].processing = false;
     // here change this for a method which return the sample processed
+    int get = samples_type[inbox].out;
     returned = samples_type[inbox].exams[get];
     samples_type[inbox].exams[get].processing = false;
     samples_type[inbox].out = (get + 1) % samples_type[inbox].maximun;
@@ -84,7 +84,6 @@ void* evaluator(void *arg){
       default:
         exit(EXIT_FAILURE);
     }
-    std::cout << random << '\n';
     shResources->evaluating[inbox] = copied_exam;
     this_thread::sleep_for (std::chrono::seconds(random));
     // Getting the result
