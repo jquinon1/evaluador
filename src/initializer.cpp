@@ -178,14 +178,14 @@ void* pre_evaluator(void *arg){
 // TO DO: Assign these values in a better way
 void fill_custom_values(int params_length, char *parameters[]){
   int index;
-  if((index = param_index(params_length,parameters,(char *)"-i")) != -1 ) custom_input = atoi(parameters[index+1]);
-  if((index = param_index(params_length,parameters,(char *)"-ie")) != -1 ) custom_input_length = atoi(parameters[index+1]);
-  if((index = param_index(params_length,parameters,(char *)"-oe")) != -1 ) custom_output = atoi(parameters[index+1]);
+  // if((index = param_index(params_length,parameters,(char *)"-i")) != -1 ) custom_input = atoi(parameters[index+1]);
+  // if((index = param_index(params_length,parameters,(char *)"-ie")) != -1 ) custom_input_length = atoi(parameters[index+1]);
+  // if((index = param_index(params_length,parameters,(char *)"-oe")) != -1 ) custom_output = atoi(parameters[index+1]);
   if((index = param_index(params_length,parameters,(char *)"-n")) != -1 ) shared_mem_name = parameters[index+1];
   if((index = param_index(params_length,parameters,(char *)"-b")) != -1 ) custom_reactive_blood = atoi(parameters[index+1]);
   if((index = param_index(params_length,parameters,(char *)"-d")) != -1 ) custom_reactive_detritos = atoi(parameters[index+1]);
   if((index = param_index(params_length,parameters,(char *)"-s")) != -1 ) custom_reactive_skin = atoi(parameters[index+1]);
-  if((index = param_index(params_length,parameters,(char *)"-q")) != -1 ) custom_intern_queues = atoi(parameters[index+1]);
+  // if((index = param_index(params_length,parameters,(char *)"-q")) != -1 ) custom_intern_queues = atoi(parameters[index+1]);
 }
 
 void create_shm(const char *shm_name){
